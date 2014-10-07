@@ -1,0 +1,17 @@
+<div class="inputform rounded">
+
+    <collection collection="elements" bindings="bindings"></collection>
+
+    <div class="row">
+        <button type="button" class="btn btn-primary top-buffer right-buffer-l pull-right bottom-buffer-s" ng-click="sendData()">Submit</button>
+    </div>
+</div>
+
+<div class="debug">
+    <h3>Databinding:</h3>
+    <p/>
+    <p/>id: {{id}}
+    <div ng-repeat="(name, value) in bindings">
+        {{name}}: {{value}}
+    </div>
+</div>
