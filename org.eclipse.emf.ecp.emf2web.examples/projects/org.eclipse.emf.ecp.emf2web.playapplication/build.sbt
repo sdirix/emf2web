@@ -1,8 +1,10 @@
-name := "qb-person-store"
+name := "emf2web-webapplication"
 
 version := "1.0-SNAPSHOT"
 
 resolvers += "QB repository" at "http://dl.bintray.com/qb/maven"
+
+resolvers += "mandubian maven bintray" at "http://dl.bintray.com/mandubian/maven"
 
 libraryDependencies ++= Seq(
   "org.qbproject"     %% "qbschema" % "0.4.0-b1",
