@@ -45,6 +45,8 @@ public class ModelPathsPage extends WizardPage {
 	private ControlDecoration exportControlDecoration;
 	private Text exportDirectoryText;
 	private Button btnNewButton;
+	
+	private Button generateNew;
 
 	private String exportDirectoryPath;
 
@@ -141,6 +143,10 @@ public class ModelPathsPage extends WizardPage {
 		btnNewButton = new Button(container, SWT.NONE);
 		btnNewButton.addSelectionListener(new BtnNewButtonSelectionListener());
 		btnNewButton.setText("Browse");
+		
+		generateNew = new Button(container, SWT.CHECK);
+		generateNew.setText("Create new Play Application");
+		generateNew.addSelectionListener(new GenerateNewSelectionListener());
 
 		init();
 	}
@@ -153,7 +159,7 @@ public class ModelPathsPage extends WizardPage {
 		if (genModel != null) {
 			genmodelText.setText(ecoreModel.getFullPath().toString());
 		}
-
+		
 		checkForPageCompletion();
 	}
 
@@ -175,7 +181,11 @@ public class ModelPathsPage extends WizardPage {
 						+ exportDirectoryPath;
 				file = new File(workspacePath);
 				if (!file.exists()) {
-					exportControlDecoration.show();
+					if (!generateNew.getSelection()) {
+						exportControlDecoration.show();
+					} else {
+						exportControlDecoration.hide();
+					}
 				} else {
 					exportDirectoryPath = workspacePath;
 					exportControlDecoration.hide();
@@ -209,6 +219,17 @@ public class ModelPathsPage extends WizardPage {
 		}
 		if (getMessage() == null || !getMessage().equals(message)) {
 			setMessage(message);
+		}
+	}
+	
+	private class GenerateNewSelectionListener extends SelectionAdapter {
+		public void widgetSelected(SelectionEvent e) {
+			boolean value = ((Button) e.getSource()).getSelection();
+			getExportWizard().setCreateNewPlayApplication(value);
+
+			if (value) {
+				exportControlDecoration.hide();
+			}
 		}
 	}
 

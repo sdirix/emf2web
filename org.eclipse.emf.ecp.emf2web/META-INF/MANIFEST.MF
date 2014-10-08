@@ -26,8 +26,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.ecp.view.table.model;bundle-version="1.2.1",
  org.eclipse.emf.ecp.view.template.model;bundle-version="1.2.1",
  org.eclipse.emf.ecp.view.treemasterdetail.model;bundle-version="1.2.1",
- org.eclipse.emf.ecp.view.vertical.model;bundle-version="1.2.1"
+ org.eclipse.emf.ecp.view.vertical.model;bundle-version="1.2.1",
+ org.eclipse.emf.ecp.makeithappen.wizards,
+ org.eclipse.osgi
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
