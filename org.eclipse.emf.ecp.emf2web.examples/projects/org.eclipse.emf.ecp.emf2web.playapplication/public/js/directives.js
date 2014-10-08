@@ -66,14 +66,12 @@ qbFormsDirectives.directive('element', function($compile) {
             } else if (type === "HorizontalLayout") {
             	//scope.element.layoutclass = scope.element.layoutclass + " form-inline";
                 toCompile = '<fieldset ng-class="element.layoutclass">' +
-                    '<legend> HORIZONTAL </legend>' +
                     '<div class="row">' +
                     '<collection collection="element.elements" bindings="bindings" open-date="openDate(event, element)" validate-number="validateNumber(value, element)"></collection>' +
                     '</div>' +
                     '</fieldset>';
             } else if (type === "VerticalLayout"){
                  toCompile = '<fieldset ng-class="element.layoutclass">' +
-                    '<legend> VERTICAL </legend>' +
 
                     '<collection collection="element.elements" bindings="bindings" open-date="openDate(event, element)" validate-number="validateNumber(value, element)"></collection>' +
 
