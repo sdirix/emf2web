@@ -34,6 +34,7 @@ import org.eclipse.emf.ecp.emf2web.wizard.pages.IOnEnterWizardPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ModelPathsPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ViewModelsPage;
 import org.eclipse.emf.ecp.makeithappen.internal.wizards.MakeItHappenWizard;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -136,11 +137,13 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		if (!createNewPlayApplication) {
 			//check if valid
 			if (!exportDirectory.isDirectory()) {
+				MessageDialog.openError(getShell(), "Play Application Path Error", "The chosen play application directory is not a directory!");
 				return false;
 			}
 	
 			if (!exportDirectory.exists()) {
 				if (!exportDirectory.mkdirs()) {
+					MessageDialog.openError(getShell(), "Play Application Path Error", "The chosen path for the play application could not be generated!");
 					return false;
 				}
 			}
@@ -176,12 +179,17 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 			    importProject(destination, exportPath);
 			    
 			} catch (URISyntaxException e) {
+				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 			    e.printStackTrace();
-			    System.out.println("Test");
+			    return false;
 			} catch (IOException e) {
+				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 			    e.printStackTrace();
+			    return false;
 			} catch (CoreException e) {
+				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 				e.printStackTrace();
+				return false;
 			}
 		}
 
