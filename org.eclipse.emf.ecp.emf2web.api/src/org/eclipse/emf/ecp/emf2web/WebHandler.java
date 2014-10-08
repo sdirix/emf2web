@@ -24,6 +24,15 @@ public class WebHandler {
 		infoMapping = new HashMap<EObject, WebInfo>();
 	}
 
+	public int getNumberOfWebElements(EClass eClass) throws IOException {
+		return getNumberOfWebElements(eClass.getName());
+	}
+
+	public int getNumberOfWebElements(String nameOfEClass) throws IOException {
+		JSONCrudOperator operator = new JSONCrudOperator();
+		return operator.readElements(url, nameOfEClass.toLowerCase()).size();
+	}
+
 	public List<EObject> getWebElements(EClass eClass) throws IOException {
 		List<EObject> result = new ArrayList<EObject>();
 
