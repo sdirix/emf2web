@@ -32,11 +32,22 @@ First Time Setup
 
 
 Typical Usage
------
+-------------
 
 1. Start Play Application
 2. Create your data and view models in Eclipse
 3. Open contextual menu (right-click) of your data model (.ecore file)
 4. Execute "EMF Forms > Convert to Web"
 5. Open URL "http://localhost:9000/#/eclassname" where "eclassname" is one of the exported eClasses. 
+
+Deploy as Dropins
+-----------------
+
+To deploy the plugins as dropins simply export emf2web, emf2web.api and emf2web.examples and put them in the dropin folder.
+
+Make sure the following criteria are met:
+
+* The Dropin-Eclipse is based on the Modeling Edition
+* Xtend is installed
+* The emf2web.examples plugin must be deployed as a directory, not as .jar (simply extract the exported .jar)
 
