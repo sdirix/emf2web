@@ -106,6 +106,12 @@ public class ClassMapping {
 	public static Map<String, Object> eObjectToMap(EObject eObject) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		for (EAttribute eAttribute : eObject.eClass().getEAllAttributes()) {
+			
+			if(eObject.eGet(eAttribute) == null){
+				result.put(eAttribute.getName(), null);
+				continue;
+			}
+			
 			EClassifier eType = eAttribute.getEType();
 
 			if (Arrays.asList(dateIdentifier).contains(eType.getName())) {
