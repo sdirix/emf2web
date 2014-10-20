@@ -253,6 +253,7 @@ class Emf2QbExporter {
 			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound > 0] SEPARATOR ','»
 				"«eStructuralFeature.name»" -> «classMapper.getQBName(eStructuralFeature.EType)»
 			«ENDFOR»
+			«IF eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound > 0].size > 0»,«ENDIF»
 			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound == 0] SEPARATOR ','»
 				"«eStructuralFeature.name»" -> optional(«classMapper.getQBName(eStructuralFeature.EType)»)
 			«ENDFOR»
