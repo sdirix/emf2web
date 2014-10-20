@@ -31,6 +31,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Combo;
 
 public class ModelPathsPage extends WizardPage {
 	private Text ecoremodelText;
@@ -42,13 +47,17 @@ public class ModelPathsPage extends WizardPage {
 	private IFile genModel;
 	private ControlDecoration ecoreControlDecoration;
 	private ControlDecoration genControlDecoration;
-	private ControlDecoration exportControlDecoration;
-	private Text exportDirectoryText;
-	private Button btnNewButton;
-	
-	private Button generateNew;
+	private Button projectSettingsButton;
+	private Combo combo;
 
-	private String exportDirectoryPath;
+	private Group grpProjectSettings;
+	private Text projectSettingsText;
+	private Label projectSettingsLabel;
+
+	private boolean createNewProject = false;
+	private IProject selectedProject = null;
+	private String projectName = "";
+	private ControlDecoration projectControlDecoration;
 
 	/**
 	 * Create the wizard.
@@ -56,9 +65,21 @@ public class ModelPathsPage extends WizardPage {
 	public ModelPathsPage(IFile ecoreModel, IFile genModel) {
 		super("wizardPage");
 		setTitle("ECP Model Exporter");
-		setDescription("Select the models and the directory to export to");
+		setDescription("Select the models and the project to export to");
 		this.ecoreModel = ecoreModel;
 		this.genModel = genModel;
+	}
+
+	public boolean getCreateNewProject() {
+		return createNewProject;
+	}
+
+	public IProject getSelectedProject() {
+		return selectedProject;
+	}
+
+	public String getProjectName() {
+		return projectName;
 	}
 
 	/**
@@ -120,33 +141,66 @@ public class ModelPathsPage extends WizardPage {
 		genBrowse.setText("Browse");
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
-		new Label(container, SWT.NONE);
 
-		Label lblPlayApplicationDirectory = new Label(container, SWT.NONE);
-		lblPlayApplicationDirectory.setText("Play Application Directory");
-		new Label(container, SWT.NONE);
+		grpProjectSettings = new Group(container, SWT.NONE);
+		grpProjectSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+				false, false, 2, 1));
+		grpProjectSettings.setText("Project Settings");
+		grpProjectSettings.setLayout(new GridLayout(2, false));
 
-		exportDirectoryText = new Text(container, SWT.BORDER);
-		exportDirectoryText
-				.addModifyListener(new ExportDirectoryTextModifyListener());
-		exportDirectoryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+		Composite composite = new Composite(grpProjectSettings, SWT.NONE);
+		composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 2, 1));
+		composite.setBounds(0, 0, 64, 64);
+		composite.setLayout(new GridLayout(2, false));
+
+		Label lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setText("Action:");
+
+		combo = new Combo(composite, SWT.NONE);
+		combo.addSelectionListener(new ComboSelectionListener());
+		combo.setItems(new String[] { "Update existing Project",
+				"Create new Project" });
+		combo.select(0);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+
+		projectSettingsLabel = new Label(grpProjectSettings, SWT.NONE);
+		projectSettingsLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+				false, false, 1, 1));
+		projectSettingsLabel.setBounds(0, 0, 55, 15);
+		projectSettingsLabel.setText("Select Project");
+		new Label(grpProjectSettings, SWT.NONE);
+
+		projectSettingsText = new Text(grpProjectSettings, SWT.BORDER);
+		projectSettingsText
+				.addModifyListener(new ProjectSettingsTextModifyListener());
+		projectSettingsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
 				true, false, 1, 1));
 
-		exportControlDecoration = new ControlDecoration(exportDirectoryText,
+		projectControlDecoration = new ControlDecoration(projectSettingsText,
 				SWT.LEFT | SWT.TOP);
-		exportControlDecoration
-				.setDescriptionText("The directory does not exist! It will be created if possible.");
-		exportControlDecoration.setImage(warningImage);
-		exportControlDecoration.hide();
+		projectControlDecoration
+				.setDescriptionText("Please enter a valid project name");
+		projectControlDecoration.setImage(errorImage);
+		projectControlDecoration.hide();
 
-		btnNewButton = new Button(container, SWT.NONE);
-		btnNewButton.addSelectionListener(new BtnNewButtonSelectionListener());
-		btnNewButton.setText("Browse");
-		
-		generateNew = new Button(container, SWT.CHECK);
-		generateNew.setText("Create new Play Application");
-		generateNew.addSelectionListener(new GenerateNewSelectionListener());
+		projectSettingsButton = new Button(grpProjectSettings, SWT.NONE);
+		projectSettingsButton.setSize(50, 25);
+		projectSettingsButton
+				.addSelectionListener(new BtnNewButtonSelectionListener());
+		projectSettingsButton.setText("Browse");
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
+
+		Label lblNewLabel_1 = new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
 
 		init();
 	}
@@ -159,7 +213,7 @@ public class ModelPathsPage extends WizardPage {
 		if (genModel != null) {
 			genmodelText.setText(ecoreModel.getFullPath().toString());
 		}
-		
+
 		checkForPageCompletion();
 	}
 
@@ -167,31 +221,19 @@ public class ModelPathsPage extends WizardPage {
 		boolean pageComplete = true;
 		String message = null;
 
-		if (exportDirectoryPath == null
-				|| exportDirectoryPath.trim().equals("")) {
-			pageComplete = false;
-			message = "Please enter a directory to export to";
-		} else {
-			File file = new File(exportDirectoryPath);
-			if (!file.exists()) {
-				// try workspace path
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				String workspacePath = workspace.getRoot().getLocation()
-						.toString()
-						+ exportDirectoryPath;
-				file = new File(workspacePath);
-				if (!file.exists()) {
-					if (!generateNew.getSelection()) {
-						exportControlDecoration.show();
-					} else {
-						exportControlDecoration.hide();
-					}
-				} else {
-					exportDirectoryPath = workspacePath;
-					exportControlDecoration.hide();
-				}
+		if (!createNewProject) {
+			if (selectedProject == null) {
+				projectControlDecoration.show();
+				pageComplete = false;
 			} else {
-				exportControlDecoration.hide();
+				projectControlDecoration.hide();
+			}
+		} else {
+			if (selectedProject != null) {
+				projectControlDecoration.show();
+				pageComplete = false;
+			}else{
+				projectControlDecoration.hide();
 			}
 		}
 
@@ -219,17 +261,6 @@ public class ModelPathsPage extends WizardPage {
 		}
 		if (getMessage() == null || !getMessage().equals(message)) {
 			setMessage(message);
-		}
-	}
-	
-	private class GenerateNewSelectionListener extends SelectionAdapter {
-		public void widgetSelected(SelectionEvent e) {
-			boolean value = ((Button) e.getSource()).getSelection();
-			getExportWizard().setCreateNewPlayApplication(value);
-
-			if (value) {
-				exportControlDecoration.hide();
-			}
 		}
 	}
 
@@ -290,12 +321,12 @@ public class ModelPathsPage extends WizardPage {
 
 			if (e.getSource() == ecoremodelText) {
 				ecoreModel = file;
-				if (getExportWizard() != null) {
+				if (getExportWizard() != null && ecoreModel.exists()) {
 					getExportWizard().setEcoreModel(ecoreModel);
 				}
 			} else {
 				genModel = file;
-				if (getExportWizard() != null) {
+				if (getExportWizard() != null && genModel.exists()) {
 					getExportWizard().setGenModel(genModel);
 				}
 			}
@@ -331,20 +362,48 @@ public class ModelPathsPage extends WizardPage {
 				Object result = dialog.getFirstResult();
 				if (result instanceof IProject) {
 					IProject project = (IProject) result;
-					exportDirectoryText.setText(project.getFullPath()
-							.toString());
+					selectedProject = project;
+					projectSettingsText.setText(project.getName());
 				}
 			}
 		}
 	}
 
-	private class ExportDirectoryTextModifyListener implements ModifyListener {
-		public void modifyText(ModifyEvent e) {
-			exportDirectoryPath = ((Text) e.getSource()).getText();
-			checkForPageCompletion();
-			if (getExportWizard() != null) {
-				getExportWizard().setExportPath(exportDirectoryPath);
+	private class ComboSelectionListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if (combo.getSelectionIndex() == 0) {
+				projectSettingsLabel.setText("Select Project");
+				createNewProject = false;
+				if (selectedProject != null) {
+					projectSettingsText.setText(selectedProject.getName());
+				}
+				projectSettingsButton.setEnabled(true);
+			} else if (combo.getSelectionIndex() == 1) {
+				projectSettingsLabel.setText("Enter new Project Name");
+				createNewProject = true;
+				projectSettingsButton.setEnabled(false);
 			}
+		}
+	}
+
+	private class ProjectSettingsTextModifyListener implements ModifyListener {
+		public void modifyText(ModifyEvent e) {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			boolean found = false;
+			for (IProject project : workspace.getRoot().getProjects()) {
+				String searchName = projectSettingsText.getText() != null ? projectSettingsText
+						.getText().trim() : "";
+				if (searchName.equals(project.getName())) {
+					selectedProject = project;
+					found = true;
+				}
+			}
+			if (!found) {
+				selectedProject = null;
+			}
+			projectName = projectSettingsText.getText();
+			checkForPageCompletion();
 		}
 	}
 

@@ -33,7 +33,6 @@ import org.eclipse.emf.ecp.emf2web.wizard.pages.EClassPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.IOnEnterWizardPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ModelPathsPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ViewModelsPage;
-import org.eclipse.emf.ecp.makeithappen.internal.wizards.MakeItHappenWizard;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -46,7 +45,6 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 	private IFile ecoreModel;
 	private IFile genModel;
-	private String exportPath;
 
 	private ResourceSet resourceSet;
 	private Resource ecoreResource;
@@ -110,10 +108,6 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		resourceSet = new ResourceSetImpl();
 	}
 
-	public void setExportPath(String exportPath) {
-		this.exportPath = exportPath;
-	}
-
 	@Override
 	public void addPages() {
 		modelsPage = new ModelPathsPage(ecoreModel, genModel);
@@ -127,14 +121,14 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 	@Override
 	public boolean performFinish() {
-		// check export path
-		if (exportPath == null) {
-			return false;
-		}
+		File exportDirectory;
+		IProject project;
+		
 
-		File exportDirectory = new File(exportPath);
-
-		if (!createNewPlayApplication) {
+		if (!modelsPage.getCreateNewProject()) {
+			project = modelsPage.getSelectedProject();
+			exportDirectory = project.getLocation().toFile();
+			
 			//check if valid
 			if (!exportDirectory.isDirectory()) {
 				MessageDialog.openError(getShell(), "Play Application Path Error", "The chosen play application directory is not a directory!");
@@ -147,12 +141,14 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 					return false;
 				}
 			}
-		}
-		
-		// copy from examples plugin
-		if (createNewPlayApplication){
+		}else{
 			Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
 			URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
+			
+			String name = modelsPage.getProjectName();
+			if(name == null || name.trim().equals("")){
+				name = "playapplication";
+			}
 			
 			File source = null;
 			try {
@@ -168,7 +164,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 			    IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			    File workspaceDirectory = workspace.getRoot().getLocation().toFile();
 			    
-			    File destination = new File(workspaceDirectory.getAbsolutePath() + File.pathSeparator + exportPath);
+			    File destination = new File(workspaceDirectory, name);
 			    destination.mkdir();
 			    
 			    exportDirectory = destination;
@@ -176,8 +172,8 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 			    FileUtils.copyDirectory(source, destination);
 			    
 			    //register project in eclipse
-			    importProject(destination, exportPath);
-			    
+			    project = importProject(destination, name);
+			
 			} catch (URISyntaxException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 			    e.printStackTrace();
@@ -207,16 +203,24 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		Emf2QbExporter exporter = new Emf2QbExporter();
 		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
 		
+		try {
+			project.refreshLocal(IProject.DEPTH_INFINITE, null);
+		} catch (CoreException e) {
+			MessageDialog.openError(getShell(), "Refresh Error", e.getMessage());
+			e.printStackTrace();
+		}
+		
 		return true;
 	}
 	
-	private void importProject(final File baseDirectory, final String projectName) throws CoreException {
+	private IProject importProject(final File baseDirectory, final String projectName) throws CoreException {
 		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
 				new Path(baseDirectory.getAbsolutePath() + "/.project"));
 		description.setName(projectName);
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		project.create(description, null);
 		project.open(null);
+		return project;
 	}
 
 	@Override
