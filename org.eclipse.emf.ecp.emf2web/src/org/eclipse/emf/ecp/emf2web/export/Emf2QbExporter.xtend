@@ -250,8 +250,11 @@ class Emf2QbExporter {
 		'''
 		val modelSchema = qbClass(	
 			"id" -> objectId,
-			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType)] SEPARATOR ','»
+			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound > 0] SEPARATOR ','»
 				"«eStructuralFeature.name»" -> «classMapper.getQBName(eStructuralFeature.EType)»
+			«ENDFOR»
+			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound == 0] SEPARATOR ','»
+				"«eStructuralFeature.name»" -> optional(«classMapper.getQBName(eStructuralFeature.EType)»)
 			«ENDFOR»
 		)
 		'''
