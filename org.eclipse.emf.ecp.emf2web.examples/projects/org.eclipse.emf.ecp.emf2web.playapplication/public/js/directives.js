@@ -77,6 +77,8 @@ qbFormsDirectives.directive('element', function($compile) {
 
                     '</fieldset>';           	
             } else if (type === "Label"){
+                scope.element.layoutclass = scope.element.layoutclass + " qblabel";
+
             	toCompile = '<div ng-class="element.layoutclass">' +
 	            	'{{element.elements[0].value}}' +
 	            	'</div>';

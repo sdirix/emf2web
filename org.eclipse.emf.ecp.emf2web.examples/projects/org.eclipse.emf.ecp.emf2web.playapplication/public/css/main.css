@@ -31,12 +31,21 @@
     margin-left:20px;
     margin-right:20px;
     margin-top:20px;
+    margin-bottom:20px;
+    padding-left:20px;
+    padding-right:20px;
 }
 .error {
     background: Red;
 }
 .fill {
 	width: 100%;
+}
+
+.qblabel{
+  padding-left:0px;
+  padding-right:0px;
+  font-weight: bold;
 }
 
 .radio-inline, .checkbox{
