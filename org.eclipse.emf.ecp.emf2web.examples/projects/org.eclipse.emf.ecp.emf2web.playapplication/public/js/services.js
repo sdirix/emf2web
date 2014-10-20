@@ -256,7 +256,7 @@ function getType(elementName, model) {
 
 function getValue(elementName, instanceData) {
     if (instanceData === undefined) {
-        return "";
+        return null;
     }
 
     var keys = Object.keys(instanceData);
@@ -268,7 +268,7 @@ function getValue(elementName, instanceData) {
         }
     }
 
-    return "";
+    return null;
 }
 
 function getUIElement(name, type, value) {

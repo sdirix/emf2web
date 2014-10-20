@@ -31,7 +31,9 @@ qbFormsControllers
 
                 for (var i = 0; i < bindingsKeys.length; i++) {
                     var key = bindingsKeys[i];
-                    data[key] = $scope.bindings[key];
+                    if($scope.bindings[key] != null){
+                        data[key] = $scope.bindings[key];
+                    }
                 }
                 
                 SendData.sendData($routeParams.type, $scope.id, data);
