@@ -176,11 +176,15 @@ function buildLayoutTree(model, layout, instance, bindings) {
             };
 
             var elementPath = element.path;
+            var elementName = element.name;
+            if(elementName === undefined || elementName === null){
+                elementName = elementPath;
+            }
 
             var elementTypeInfo = getType(elementPath, model);
             var instanceValue = getValue(elementPath, instance); 
 
-            var uiElement = getUIElement(elementPath, elementTypeInfo, instanceValue);
+            var uiElement = getUIElement(elementName, elementPath, elementTypeInfo, instanceValue);
             cObject.elements.push(uiElement);
 
             result.push(cObject);
@@ -193,7 +197,7 @@ function buildLayoutTree(model, layout, instance, bindings) {
                 "size": maxSize
             };
 
-            var uiElement = getUIElement("", {type:"Label"}, element.text);
+            var uiElement = getUIElement("", "", {type:"Label"}, element.text);
             lObject.elements.push(uiElement);
 
             result.push(lObject);
@@ -271,8 +275,9 @@ function getValue(elementName, instanceData) {
     return null;
 }
 
-function getUIElement(name, type, value) {
+function getUIElement(displayName, name, type, value) {
     var data = {
+        "displayname": displayName,
         "name": name,
         "value": value,
         "type": type.type,
