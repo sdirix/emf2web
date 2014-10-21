@@ -18,13 +18,16 @@ import org.eclipse.emf.ecp.view.spi.label.model.VLabel
 import org.eclipse.emf.ecp.view.spi.group.model.VGroup
 import org.eclipse.emf.ecp.view.spi.model.VControl
 import java.util.Comparator
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 class Emf2QbExporter {
 
 	var ClassMapping classMapper = null;
+	var NameHelper nameHelper = null;
 	
 	def public void export(Resource ecoreModel, Set<EClass> selectedClasses, Set<Resource> viewModels, File destinationDir){
 		classMapper = new ClassMapping()
+		nameHelper = new NameHelper()
 
 		val allEEnums = new ArrayList<EEnum>();
 		ecoreModel.allContents.filter(EPackage).forEach [ ePackage |
@@ -220,7 +223,7 @@ class Emf2QbExporter {
 				'''	
 			VControl:
 				'''
-				QBViewControl("«viewModelElement.domainModelReference.EStructuralFeatureIterator.next.name»", QBViewPath("«viewModelElement.domainModelReference.EStructuralFeatureIterator.next.name»"))
+				QBViewControl("«nameHelper.getDisplayName(eClass,viewModelElement.domainModelReference.EStructuralFeatureIterator.next)»", QBViewPath("«viewModelElement.domainModelReference.EStructuralFeatureIterator.next.name»"))
 				'''
 			default: ""
 		}
@@ -268,7 +271,7 @@ class Emf2QbExporter {
 		val viewSchema = QBViewModel(	
 			modelSchema,
 			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType)] SEPARATOR ','»
-			QBViewControl("«eStructuralFeature.name»", QBViewPath("«eStructuralFeature.name»"))
+			QBViewControl("«nameHelper.getDisplayName(eClass,eStructuralFeature)»", QBViewPath("«eStructuralFeature.name»"))
 			«ENDFOR»
 		)
 		'''
