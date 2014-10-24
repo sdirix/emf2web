@@ -58,10 +58,13 @@ qbFormsDirectives.directive('element', function($compile) {
 
                 // set the sizes for label and input
                 var size = scope.element.size;
-                var labelsize = Math.floor(size/3);
+
+                //used when displaying labels next to the input
+                //var labelsize = Math.floor(size/3);
                 scope.element.elements[0].labelclass = ""; //"col-sm-" + labelsize;
                 scope.element.elements[0].inputclass = ""; //"col-sm-" + (size - labelsize);
-                scope.element.elements[0].wholesize = size;
+
+                scope.element.elements[0].wholesize = scope.element.layoutclass;
 
             } else if (type === "HorizontalLayout") {
             	//scope.element.layoutclass = scope.element.layoutclass + " form-inline";
