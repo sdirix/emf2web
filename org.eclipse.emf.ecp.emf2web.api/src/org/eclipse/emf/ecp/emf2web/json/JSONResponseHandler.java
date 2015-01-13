@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.json;
 
 import java.io.IOException;
@@ -22,9 +34,9 @@ public class JSONResponseHandler<T> implements ResponseHandler<T> {
 	@Override
 	public T handleResponse(HttpResponse response)
 		throws ClientProtocolException, IOException {
-		StatusLine statusLine = response.getStatusLine();
+		final StatusLine statusLine = response.getStatusLine();
 
-		HttpEntity entity = response.getEntity();
+		final HttpEntity entity = response.getEntity();
 		if (statusLine.getStatusCode() >= 300) {
 			throw new HttpResponseException(statusLine.getStatusCode(),
 				statusLine.getReasonPhrase());
@@ -33,11 +45,11 @@ public class JSONResponseHandler<T> implements ResponseHandler<T> {
 			throw new ClientProtocolException("Response contains no content");
 		}
 
-		Gson gson = new GsonBuilder().create();
-		ContentType contentType = ContentType.getOrDefault(entity);
-		Charset charset = contentType.getCharset();
+		final Gson gson = new GsonBuilder().create();
+		final ContentType contentType = ContentType.getOrDefault(entity);
+		final Charset charset = contentType.getCharset();
 
-		Reader reader = new InputStreamReader(entity.getContent(), charset);
+		final Reader reader = new InputStreamReader(entity.getContent(), charset);
 
 		return gson.fromJson(reader, new TypeToken<T>() {
 		}.getType());

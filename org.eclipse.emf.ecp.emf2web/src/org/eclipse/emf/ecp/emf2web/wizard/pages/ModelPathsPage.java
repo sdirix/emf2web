@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.wizard.pages;
 
 import org.eclipse.core.resources.IFile;
@@ -12,6 +24,7 @@ import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -79,26 +92,27 @@ public class ModelPathsPage extends WizardPage {
 
 	/**
 	 * Create contents of the wizard.
-	 * 
+	 *
 	 * @param parent
 	 */
+	@Override
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
+		final Composite container = new Composite(parent, SWT.NULL);
 
-		FieldDecoration errorFieldDecoration = FieldDecorationRegistry
+		final FieldDecoration errorFieldDecoration = FieldDecorationRegistry
 			.getDefault().getFieldDecoration(
 				FieldDecorationRegistry.DEC_ERROR);
-		Image errorImage = errorFieldDecoration.getImage();
+		final Image errorImage = errorFieldDecoration.getImage();
 
-		FieldDecoration warningFieldDecoration = FieldDecorationRegistry
+		final FieldDecoration warningFieldDecoration = FieldDecorationRegistry
 			.getDefault().getFieldDecoration(
 				FieldDecorationRegistry.DEC_WARNING);
-		Image warningImage = warningFieldDecoration.getImage();
+		final Image warningImage = warningFieldDecoration.getImage();
 
 		setControl(container);
 		container.setLayout(new GridLayout(2, false));
 
-		Label lblEmfEcoreModel = new Label(container, SWT.NONE);
+		final Label lblEmfEcoreModel = new Label(container, SWT.NONE);
 		lblEmfEcoreModel.setText("EMF Ecore Model");
 		new Label(container, SWT.NONE);
 
@@ -117,7 +131,7 @@ public class ModelPathsPage extends WizardPage {
 		ecoreBrowse.addSelectionListener(new EcoreBrowseSelectionListener());
 		ecoreBrowse.setText("Browse");
 
-		Label lblEmfEcoreGen = new Label(container, SWT.NONE);
+		final Label lblEmfEcoreGen = new Label(container, SWT.NONE);
 		lblEmfEcoreGen.setText("EMF Ecore Gen Model (optional)");
 		new Label(container, SWT.NONE);
 
@@ -143,19 +157,19 @@ public class ModelPathsPage extends WizardPage {
 		grpProjectSettings.setText("Project Settings");
 		grpProjectSettings.setLayout(new GridLayout(2, false));
 
-		Composite composite = new Composite(grpProjectSettings, SWT.NONE);
+		final Composite composite = new Composite(grpProjectSettings, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 			false, 2, 1));
 		composite.setBounds(0, 0, 64, 64);
 		composite.setLayout(new GridLayout(2, false));
 
-		Label lblNewLabel = new Label(composite, SWT.NONE);
+		final Label lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setText("Action:");
 
 		combo = new Combo(composite, SWT.NONE);
 		combo.addSelectionListener(new ComboSelectionListener());
 		combo.setItems(new String[] { "Update existing Project",
-			"Create new Project" });
+		"Create new Project" });
 		combo.select(0);
 		new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
@@ -169,21 +183,21 @@ public class ModelPathsPage extends WizardPage {
 
 		projectSettingsText = new Text(grpProjectSettings, SWT.BORDER);
 		projectSettingsText
-			.addModifyListener(new ProjectSettingsTextModifyListener());
+		.addModifyListener(new ProjectSettingsTextModifyListener());
 		projectSettingsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
 			true, false, 1, 1));
 
 		projectControlDecoration = new ControlDecoration(projectSettingsText,
 			SWT.LEFT | SWT.TOP);
 		projectControlDecoration
-			.setDescriptionText("Please enter a valid project name");
+		.setDescriptionText("Please enter a valid project name");
 		projectControlDecoration.setImage(errorImage);
 		projectControlDecoration.hide();
 
 		projectSettingsButton = new Button(grpProjectSettings, SWT.NONE);
 		projectSettingsButton.setSize(50, 25);
 		projectSettingsButton
-			.addSelectionListener(new BtnNewButtonSelectionListener());
+		.addSelectionListener(new BtnNewButtonSelectionListener());
 		projectSettingsButton.setText("Browse");
 		new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
@@ -194,7 +208,7 @@ public class ModelPathsPage extends WizardPage {
 		new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
 
-		Label lblNewLabel_1 = new Label(grpProjectSettings, SWT.NONE);
+		final Label lblNewLabel_1 = new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
 
 		init();
@@ -262,7 +276,7 @@ public class ModelPathsPage extends WizardPage {
 	private class EcoreBrowseSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
+			final ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				getShell(), new WorkbenchLabelProvider(),
 				new BaseWorkbenchContentProvider());
 
@@ -288,7 +302,7 @@ public class ModelPathsPage extends WizardPage {
 				public boolean select(Viewer viewer, Object parentElement,
 					Object element) {
 					if (element instanceof IFile) {
-						IFile file = (IFile) element;
+						final IFile file = (IFile) element;
 						return file.getName().endsWith(modelExtension);
 					}
 					return true;
@@ -296,10 +310,10 @@ public class ModelPathsPage extends WizardPage {
 			});
 
 			dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-			if (dialog.open() == ElementTreeSelectionDialog.OK) {
-				Object result = dialog.getFirstResult();
+			if (dialog.open() == Window.OK) {
+				final Object result = dialog.getFirstResult();
 				if (result instanceof IFile) {
-					IFile file = (IFile) result;
+					final IFile file = (IFile) result;
 					modelText.setText(file.getFullPath().toString());
 				}
 			}
@@ -307,12 +321,13 @@ public class ModelPathsPage extends WizardPage {
 	}
 
 	private class EcoremodelTextModifyListener implements ModifyListener {
+		@Override
 		public void modifyText(ModifyEvent e) {
-			String text = ((Text) e.getSource()).getText();
+			final String text = ((Text) e.getSource()).getText();
 
-			IPath path = new Path(text);
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile file = workspace.getRoot().getFile(path);
+			final IPath path = new Path(text);
+			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			final IFile file = workspace.getRoot().getFile(path);
 
 			if (e.getSource() == ecoremodelText) {
 				ecoreModel = file;
@@ -333,7 +348,7 @@ public class ModelPathsPage extends WizardPage {
 	private class BtnNewButtonSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
+			final ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				getShell(), new WorkbenchLabelProvider(),
 				new BaseWorkbenchContentProvider());
 
@@ -353,10 +368,10 @@ public class ModelPathsPage extends WizardPage {
 
 			dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 
-			if (dialog.open() == ElementTreeSelectionDialog.OK) {
-				Object result = dialog.getFirstResult();
+			if (dialog.open() == Window.OK) {
+				final Object result = dialog.getFirstResult();
 				if (result instanceof IProject) {
-					IProject project = (IProject) result;
+					final IProject project = (IProject) result;
 					selectedProject = project;
 					projectSettingsText.setText(project.getName());
 				}
@@ -384,16 +399,17 @@ public class ModelPathsPage extends WizardPage {
 	}
 
 	private class ProjectSettingsTextModifyListener implements ModifyListener {
+		@Override
 		public void modifyText(ModifyEvent e) {
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			boolean found = false;
-			for (IProject project : workspace.getRoot().getProjects()) {
-				String searchName = projectSettingsText.getText() != null ? projectSettingsText
+			for (final IProject project : workspace.getRoot().getProjects()) {
+				final String searchName = projectSettingsText.getText() != null ? projectSettingsText
 					.getText().trim() : "";
-				if (searchName.equals(project.getName())) {
-					selectedProject = project;
-					found = true;
-				}
+					if (searchName.equals(project.getName())) {
+						selectedProject = project;
+						found = true;
+					}
 			}
 			if (!found) {
 				selectedProject = null;
@@ -404,7 +420,7 @@ public class ModelPathsPage extends WizardPage {
 	}
 
 	private ViewModelExportWizard getExportWizard() {
-		IWizard wizard = getWizard();
+		final IWizard wizard = getWizard();
 		if (wizard instanceof ViewModelExportWizard) {
 			return (ViewModelExportWizard) wizard;
 		} else {

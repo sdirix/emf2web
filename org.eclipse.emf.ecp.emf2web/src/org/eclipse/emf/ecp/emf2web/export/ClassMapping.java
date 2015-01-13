@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.export;
 
 import java.util.ArrayList;
@@ -20,7 +32,7 @@ public class ClassMapping {
 		"ELongObject", "EShort", "EShortObject" };
 
 	public static final String[] booleanIdentifier = new String[] { "EBoolean",
-		"EBooleanObject" };
+	"EBooleanObject" };
 
 	public static final String[] dateIdentifier = new String[] { "EDate" };
 
@@ -30,7 +42,7 @@ public class ClassMapping {
 		"EJavaClass<T>", "EJavaObject", "EMap<K,V>", "EResource",
 		"EResourceSet", "ETreeIterator<E>" };
 
-	private List<EEnum> enums = new ArrayList<EEnum>();
+	private final List<EEnum> enums = new ArrayList<EEnum>();
 
 	public void addEEnum(EEnum eEnum) {
 		enums.add(eEnum);
@@ -41,12 +53,12 @@ public class ClassMapping {
 	}
 
 	public boolean isAllowed(EClassifier eType) {
-		String qbName = getQBName(eType);
+		final String qbName = getQBName(eType);
 		return !qbName.equals("unknown") && !qbName.equals("unsupported");
 	}
 
 	public String getQBName(EClassifier eType) {
-		String eAttributeName = eType.getName();
+		final String eAttributeName = eType.getName();
 		if (Arrays.asList(stringIdentifier).contains(eAttributeName)) {
 			return "qbString";
 		} else if (Arrays.asList(integerIdentifier).contains(eAttributeName)) {
@@ -66,7 +78,7 @@ public class ClassMapping {
 			return "qbDateTime";
 		} else {
 			// check for enums
-			for (EEnum eEnum : enums) {
+			for (final EEnum eEnum : enums) {
 				if (eAttributeName.equals(eEnum.getName())) {
 					return "qbEnum(" + enumToQB(eEnum) + ")";
 				}
@@ -78,13 +90,13 @@ public class ClassMapping {
 
 	private String enumToQB(EEnum eEnum) {
 		String result = "";
-		List<EEnumLiteral> literals = new ArrayList<EEnumLiteral>(
+		final List<EEnumLiteral> literals = new ArrayList<EEnumLiteral>(
 			eEnum.getELiterals());
 		if (literals.size() > 0) {
 			result += "\"" + literals.get(0).getLiteral() + "\"";
 			literals.remove(0);
 		}
-		for (EEnumLiteral literal : literals) {
+		for (final EEnumLiteral literal : literals) {
 			result += ", \"" + literal.getLiteral() + "\"";
 		}
 		return result;

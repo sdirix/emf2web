@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.export;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -36,13 +48,13 @@ public class NameHelper {
 	}
 
 	public String getDisplayName(Setting setting) {
-		IItemPropertyDescriptor descriptor = getItemPropertyDescriptor(setting);
+		final IItemPropertyDescriptor descriptor = getItemPropertyDescriptor(setting);
 		return descriptor.getDisplayName(setting.getEObject());
 	}
 
 	public String getDisplayName(EClass eClass, EStructuralFeature feat) {
-		EObject object = EcoreUtil.create(eClass);
-		IItemPropertyDescriptor descriptor = adapterFactoryItemDelegator
+		final EObject object = EcoreUtil.create(eClass);
+		final IItemPropertyDescriptor descriptor = adapterFactoryItemDelegator
 			.getPropertyDescriptor(object, feat);
 		if (descriptor != null) {
 			return descriptor.getDisplayName(object);

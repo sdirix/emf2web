@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web;
 
 import java.io.IOException;
@@ -16,8 +28,8 @@ import org.eclipse.emf.ecp.emf2web.util.EcoreHelper;
 
 public class WebHandler {
 
-	private String url;
-	private Map<EObject, WebInfo> infoMapping;
+	private final String url;
+	private final Map<EObject, WebInfo> infoMapping;
 
 	public WebHandler(String url) {
 		this.url = url;
@@ -29,27 +41,27 @@ public class WebHandler {
 	}
 
 	public int getNumberOfWebElements(String nameOfEClass) throws IOException {
-		JSONCrudOperator operator = new JSONCrudOperator();
+		final JSONCrudOperator operator = new JSONCrudOperator();
 		return operator.readElements(url, nameOfEClass.toLowerCase()).size();
 	}
 
 	public List<EObject> getWebElements(EClass eClass) throws IOException {
-		List<EObject> result = new ArrayList<EObject>();
+		final List<EObject> result = new ArrayList<EObject>();
 
-		JSONCrudOperator operator = new JSONCrudOperator();
-		List<Map<String, Object>> jsonElements = operator.readElements(url,
+		final JSONCrudOperator operator = new JSONCrudOperator();
+		final List<Map<String, Object>> jsonElements = operator.readElements(url,
 			eClass.getName().toLowerCase());
 
-		for (Map<String, Object> jsonElement : jsonElements) {
-			EObject eObject = EcoreUtil.create(eClass);
+		for (final Map<String, Object> jsonElement : jsonElements) {
+			final EObject eObject = EcoreUtil.create(eClass);
 			EcoreHelper.setAttributes(eObject, jsonElement);
 
-			String id = getId(jsonElement);
+			final String id = getId(jsonElement);
 			if (id == null) {
 				System.out.println("Could not determine id for element");
 			}
 
-			WebInfo info = new WebInfo(id, eClass.getName().toLowerCase());
+			final WebInfo info = new WebInfo(id, eClass.getName().toLowerCase());
 			infoMapping.put(eObject, info);
 			result.add(eObject);
 		}
@@ -58,40 +70,40 @@ public class WebHandler {
 	}
 
 	public boolean createWebElement(EObject eObject) throws IOException {
-		Map<String, Object> jsonDescription = ClassMapping
+		final Map<String, Object> jsonDescription = ClassMapping
 			.eObjectToMap(eObject);
 
-		String type = eObject.eClass().getName().toLowerCase();
+		final String type = eObject.eClass().getName().toLowerCase();
 
-		JSONCrudOperator operator = new JSONCrudOperator();
-		Map<String, Object> response = operator.createElement(url, type,
+		final JSONCrudOperator operator = new JSONCrudOperator();
+		final Map<String, Object> response = operator.createElement(url, type,
 			jsonDescription);
 
-		String id = getId(response);
+		final String id = getId(response);
 
-		WebInfo info = new WebInfo(type, id);
+		final WebInfo info = new WebInfo(type, id);
 		infoMapping.put(eObject, info);
 
 		return true;
 	}
 
 	public boolean updateWebElement(EObject eObject) throws IOException {
-		Map<String, Object> jsonDescription = ClassMapping
+		final Map<String, Object> jsonDescription = ClassMapping
 			.eObjectToMap(eObject);
 
-		WebInfo webInfo = infoMapping.get(eObject);
+		final WebInfo webInfo = infoMapping.get(eObject);
 
-		String id = webInfo.getId();
-		String type = webInfo.getType();
+		final String id = webInfo.getId();
+		final String type = webInfo.getType();
 
 		jsonDescription.put("id", id);
 
-		JSONCrudOperator operator = new JSONCrudOperator();
+		final JSONCrudOperator operator = new JSONCrudOperator();
 		return operator.updateElement(url, type, id, jsonDescription);
 	}
 
 	private String getId(Map<String, Object> jsonElement) {
-		for (Entry<String, Object> attribute : jsonElement.entrySet()) {
+		for (final Entry<String, Object> attribute : jsonElement.entrySet()) {
 			if (attribute.getKey().equals("id")) {
 				return attribute.getValue().toString();
 			}
@@ -100,8 +112,8 @@ public class WebHandler {
 	}
 
 	private class WebInfo {
-		private String id;
-		private String type;
+		private final String id;
+		private final String type;
 
 		public WebInfo(String type, String id) {
 			this.type = type;

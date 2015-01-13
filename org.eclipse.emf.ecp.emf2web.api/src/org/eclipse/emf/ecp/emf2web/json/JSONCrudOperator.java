@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.json;
 
 import java.io.IOException;
@@ -19,18 +31,18 @@ public class JSONCrudOperator {
 
 	public List<Map<String, Object>> readElements(String url, String type)
 		throws IOException {
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		final List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		final CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
-			HttpGet httpGet = new HttpGet(url + "/" + type);
+			final HttpGet httpGet = new HttpGet(url + "/" + type);
 
-			JSONResponseHandler<List<Map<String, Object>>> responseHandler = new JSONResponseHandler<List<Map<String, Object>>>();
+			final JSONResponseHandler<List<Map<String, Object>>> responseHandler = new JSONResponseHandler<List<Map<String, Object>>>();
 
-			List<Map<String, Object>> resultList = responseHandler
+			final List<Map<String, Object>> resultList = responseHandler
 				.handleResponse(httpClient.execute(httpGet));
 
-			for (Map<String, Object> object : resultList) {
+			for (final Map<String, Object> object : resultList) {
 				if (object == null) {
 					continue;
 				}
@@ -46,14 +58,14 @@ public class JSONCrudOperator {
 
 	public Map<String, Object> createElement(String url, String type,
 		Map<String, Object> jsonDescription) throws IOException {
-		String completeUrl = url + "/" + type;
-		Map<String, Object> response = sendPost(completeUrl, jsonDescription);
+		final String completeUrl = url + "/" + type;
+		final Map<String, Object> response = sendPost(completeUrl, jsonDescription);
 		return response;
 	}
 
 	public boolean updateElement(String url, String type, String id,
 		Map<String, Object> element) throws IOException {
-		String completeUrl = url + "/" + type + "/" + id;
+		final String completeUrl = url + "/" + type + "/" + id;
 		sendPost(completeUrl, element);
 		return true;
 	}
@@ -61,6 +73,7 @@ public class JSONCrudOperator {
 	/**
 	 * @deprecated not yet implemented
 	 */
+	@Deprecated
 	public boolean deleteElement(String url, String type, String id,
 		Map<String, Object> element) throws IOException {
 		return false;
@@ -68,19 +81,19 @@ public class JSONCrudOperator {
 
 	private Map<String, Object> sendPost(String completeUrl,
 		Map<String, Object> element) throws IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		final CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
-			HttpPost postRequest = new HttpPost(completeUrl);
+			final HttpPost postRequest = new HttpPost(completeUrl);
 
-			Gson gson = new GsonBuilder().create();
-			String json = gson.toJson(element);
+			final Gson gson = new GsonBuilder().create();
+			final String json = gson.toJson(element);
 
 			postRequest.setEntity(new StringEntity(json, ContentType
 				.create("application/json")));
 
-			JSONResponseHandler<Map<String, Object>> responseHandler = new JSONResponseHandler<Map<String, Object>>();
+			final JSONResponseHandler<Map<String, Object>> responseHandler = new JSONResponseHandler<Map<String, Object>>();
 
-			Map<String, Object> response = responseHandler
+			final Map<String, Object> response = responseHandler
 				.handleResponse(httpClient.execute(postRequest));
 
 			return response;

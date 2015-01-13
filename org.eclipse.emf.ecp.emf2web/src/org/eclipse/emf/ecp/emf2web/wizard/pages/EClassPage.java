@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.wizard.pages;
 
 import java.util.ArrayList;
@@ -31,7 +43,7 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 	private CheckboxTableViewer eClassTableViewer;
 	private Resource ecoreResource;
 
-	private Set<EClass> selectedEClasses;
+	private final Set<EClass> selectedEClasses;
 
 	/**
 	 * Create the wizard.
@@ -46,11 +58,12 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 
 	/**
 	 * Create contents of the wizard.
-	 * 
+	 *
 	 * @param parent
 	 */
+	@Override
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
+		final Composite container = new Composite(parent, SWT.NULL);
 
 		setControl(container);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -58,12 +71,12 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		eClassTableViewer = CheckboxTableViewer.newCheckList(container,
 			SWT.BORDER | SWT.FULL_SELECTION);
 		eClassTableViewer
-			.addCheckStateListener(new EClassTableViewerICheckStateListener());
+		.addCheckStateListener(new EClassTableViewerICheckStateListener());
 		eClassTableViewer.setContentProvider(new ArrayContentProvider());
 
-		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
+		final ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 			ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
-		AdapterFactoryLabelProvider labelProvider = new AdapterFactoryLabelProvider(
+		final AdapterFactoryLabelProvider labelProvider = new AdapterFactoryLabelProvider(
 			composedAdapterFactory);
 
 		eClassTableViewer.setLabelProvider(labelProvider);
@@ -75,15 +88,15 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		this.ecoreResource = ecoreResource;
 		setPageComplete(false);
 
-		List<EClass> eClassList = new ArrayList<EClass>();
-		for (Iterator<EObject> it = ecoreResource.getAllContents(); it
+		final List<EClass> eClassList = new ArrayList<EClass>();
+		for (final Iterator<EObject> it = ecoreResource.getAllContents(); it
 			.hasNext();) {
-			EObject object = it.next();
+			final EObject object = it.next();
 			if (!(object instanceof EPackage)) {
 				continue;
 			}
-			EPackage ePackage = (EPackage) object;
-			for (EClassifier eclassifier : ePackage.getEClassifiers()) {
+			final EPackage ePackage = (EPackage) object;
+			for (final EClassifier eclassifier : ePackage.getEClassifiers()) {
 				if (eclassifier instanceof EClass) {
 					eClassList.add((EClass) eclassifier);
 				}
@@ -102,7 +115,7 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 	}
 
 	private ViewModelExportWizard getExportWizard() {
-		IWizard wizard = getWizard();
+		final IWizard wizard = getWizard();
 		if (wizard instanceof ViewModelExportWizard) {
 			return (ViewModelExportWizard) wizard;
 		} else {
@@ -111,7 +124,8 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 	}
 
 	private class EClassTableViewerICheckStateListener implements
-		ICheckStateListener {
+	ICheckStateListener {
+		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (event.getChecked()) {
 				selectedEClasses.add((EClass) event.getElement());

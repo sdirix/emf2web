@@ -1,9 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2014-2015 EclipseSource Muenchen GmbH and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Stefan Dirix - initial API and implementation
+ *
+ *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.wizard;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
@@ -14,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -46,7 +57,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	private IFile ecoreModel;
 	private IFile genModel;
 
-	private ResourceSet resourceSet;
+	private final ResourceSet resourceSet;
 	private Resource ecoreResource;
 	private ModelPathsPage modelsPage;
 	private EClassPage eClassPage;
@@ -71,15 +82,15 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		}
 		this.ecoreModel = ecoreModel;
 
-		URI fileURI = URI.createFileURI(ecoreModel.getLocation().toString());
+		final URI fileURI = URI.createFileURI(ecoreModel.getLocation().toString());
 		ecoreResource = resourceSet.getResource(fileURI, true);
 
 		// needed to resolve viewmodel references
-		for (Iterator<EObject> it = ecoreResource.getAllContents(); it
+		for (final Iterator<EObject> it = ecoreResource.getAllContents(); it
 			.hasNext();) {
-			EObject object = it.next();
+			final EObject object = it.next();
 			if (object instanceof EPackage) {
-				EPackage ePackage = (EPackage) object;
+				final EPackage ePackage = (EPackage) object;
 				resourceSet.getPackageRegistry().put(ePackage.getNsURI(),
 					ePackage);
 			}
@@ -143,8 +154,8 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 				}
 			}
 		} else {
-			Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
-			URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
+			final Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
+			final URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
 
 			String name = modelsPage.getProjectName();
 			if (name == null || name.trim().equals("")) {
@@ -153,19 +164,19 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 			File source = null;
 			try {
-				URL resolvedURL = FileLocator.resolve(fileURL);
+				final URL resolvedURL = FileLocator.resolve(fileURL);
 
 				// eclipse bug #145096
 				String resolvedString = resolvedURL.getFile();
 				resolvedString = "file:" + resolvedString.replaceAll(" ", "%20");
-				URL escapedURL = new URL(resolvedString);
+				final URL escapedURL = new URL(resolvedString);
 
 				source = new File(escapedURL.toURI());
 
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+				final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				final File workspaceDirectory = workspace.getRoot().getLocation().toFile();
 
-				File destination = new File(workspaceDirectory, name);
+				final File destination = new File(workspaceDirectory, name);
 				destination.mkdir();
 
 				exportDirectory = destination;
@@ -175,38 +186,38 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 				// register project in eclipse
 				project = importProject(destination, name);
 
-			} catch (URISyntaxException e) {
+			} catch (final URISyntaxException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 				e.printStackTrace();
 				return false;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 				e.printStackTrace();
 				return false;
-			} catch (CoreException e) {
+			} catch (final CoreException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 				e.printStackTrace();
 				return false;
 			}
 		}
 
-		Set<EClass> eClasses = eClassPage.getSelectedEClasses();
-		Set<Resource> viewModels = new HashSet<Resource>();
+		final Set<EClass> eClasses = eClassPage.getSelectedEClasses();
+		final Set<Resource> viewModels = new HashSet<Resource>();
 
-		for (IFile viewFile : viewModelPage.getSelectedViewModels()) {
-			URI fileURI = URI.createFileURI(viewFile.getLocation().toString());
-			Resource viewResource = resourceSet.getResource(fileURI, true);
+		for (final IFile viewFile : viewModelPage.getSelectedViewModels()) {
+			final URI fileURI = URI.createFileURI(viewFile.getLocation().toString());
+			final Resource viewResource = resourceSet.getResource(fileURI, true);
 			viewModels.add(viewResource);
 		}
 
 		EcoreUtil.resolveAll(resourceSet);
 
-		Emf2QbExporter exporter = new Emf2QbExporter();
+		final Emf2QbExporter exporter = new Emf2QbExporter();
 		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
 
 		try {
-			project.refreshLocal(IProject.DEPTH_INFINITE, null);
-		} catch (CoreException e) {
+			project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (final CoreException e) {
 			MessageDialog.openError(getShell(), "Refresh Error", e.getMessage());
 			e.printStackTrace();
 		}
@@ -215,10 +226,10 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	}
 
 	private IProject importProject(final File baseDirectory, final String projectName) throws CoreException {
-		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
+		final IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
 			new Path(baseDirectory.getAbsolutePath() + "/.project"));
 		description.setName(projectName);
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		project.create(description, null);
 		project.open(null);
 		return project;
@@ -227,10 +238,10 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		for (@SuppressWarnings("unchecked")
-		Iterator<Object> it = selection.iterator(); it.hasNext();) {
-			Object selectedObject = it.next();
+		final Iterator<Object> it = selection.iterator(); it.hasNext();) {
+			final Object selectedObject = it.next();
 			if (selectedObject instanceof IFile) {
-				IFile file = (IFile) selectedObject;
+				final IFile file = (IFile) selectedObject;
 				if (file.getLocation().getFileExtension().equals("ecore")) {
 					setEcoreModel(file);
 				} else if (file.getLocation().getFileExtension()
@@ -243,7 +254,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 	@Override
 	public IWizardPage getNextPage(IWizardPage page) {
-		IWizardPage nextPage = super.getNextPage(page);
+		final IWizardPage nextPage = super.getNextPage(page);
 		if (nextPage instanceof IOnEnterWizardPage) {
 			((IOnEnterWizardPage) nextPage).onEnterPage();
 		}
