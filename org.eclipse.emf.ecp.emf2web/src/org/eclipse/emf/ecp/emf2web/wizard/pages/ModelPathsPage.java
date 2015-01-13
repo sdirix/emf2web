@@ -86,13 +86,13 @@ public class ModelPathsPage extends WizardPage {
 		Composite container = new Composite(parent, SWT.NULL);
 
 		FieldDecoration errorFieldDecoration = FieldDecorationRegistry
-				.getDefault().getFieldDecoration(
-						FieldDecorationRegistry.DEC_ERROR);
+			.getDefault().getFieldDecoration(
+				FieldDecorationRegistry.DEC_ERROR);
 		Image errorImage = errorFieldDecoration.getImage();
 
 		FieldDecoration warningFieldDecoration = FieldDecorationRegistry
-				.getDefault().getFieldDecoration(
-						FieldDecorationRegistry.DEC_WARNING);
+			.getDefault().getFieldDecoration(
+				FieldDecorationRegistry.DEC_WARNING);
 		Image warningImage = warningFieldDecoration.getImage();
 
 		setControl(container);
@@ -105,10 +105,10 @@ public class ModelPathsPage extends WizardPage {
 		ecoremodelText = new Text(container, SWT.BORDER);
 		ecoremodelText.addModifyListener(new EcoremodelTextModifyListener());
 		ecoremodelText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
+			false, 1, 1));
 
 		ecoreControlDecoration = new ControlDecoration(ecoremodelText, SWT.LEFT
-				| SWT.TOP);
+			| SWT.TOP);
 		ecoreControlDecoration.setDescriptionText("Please enter a valid file");
 		ecoreControlDecoration.setImage(errorImage);
 		ecoreControlDecoration.hide();
@@ -123,10 +123,10 @@ public class ModelPathsPage extends WizardPage {
 
 		genmodelText = new Text(container, SWT.BORDER);
 		genmodelText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
+			false, 1, 1));
 
 		genControlDecoration = new ControlDecoration(genmodelText, SWT.LEFT
-				| SWT.TOP);
+			| SWT.TOP);
 		genControlDecoration.setDescriptionText("Please enter a valid file");
 		genControlDecoration.setImage(errorImage);
 		genControlDecoration.hide();
@@ -139,13 +139,13 @@ public class ModelPathsPage extends WizardPage {
 
 		grpProjectSettings = new Group(container, SWT.NONE);
 		grpProjectSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				false, false, 2, 1));
+			false, false, 2, 1));
 		grpProjectSettings.setText("Project Settings");
 		grpProjectSettings.setLayout(new GridLayout(2, false));
 
 		Composite composite = new Composite(grpProjectSettings, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 2, 1));
+			false, 2, 1));
 		composite.setBounds(0, 0, 64, 64);
 		composite.setLayout(new GridLayout(2, false));
 
@@ -155,35 +155,35 @@ public class ModelPathsPage extends WizardPage {
 		combo = new Combo(composite, SWT.NONE);
 		combo.addSelectionListener(new ComboSelectionListener());
 		combo.setItems(new String[] { "Update existing Project",
-				"Create new Project" });
+			"Create new Project" });
 		combo.select(0);
 		new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
 
 		projectSettingsLabel = new Label(grpProjectSettings, SWT.NONE);
 		projectSettingsLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				false, false, 1, 1));
+			false, false, 1, 1));
 		projectSettingsLabel.setBounds(0, 0, 55, 15);
 		projectSettingsLabel.setText("Select Project");
 		new Label(grpProjectSettings, SWT.NONE);
 
 		projectSettingsText = new Text(grpProjectSettings, SWT.BORDER);
 		projectSettingsText
-				.addModifyListener(new ProjectSettingsTextModifyListener());
+			.addModifyListener(new ProjectSettingsTextModifyListener());
 		projectSettingsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				true, false, 1, 1));
+			true, false, 1, 1));
 
 		projectControlDecoration = new ControlDecoration(projectSettingsText,
-				SWT.LEFT | SWT.TOP);
+			SWT.LEFT | SWT.TOP);
 		projectControlDecoration
-				.setDescriptionText("Please enter a valid project name");
+			.setDescriptionText("Please enter a valid project name");
 		projectControlDecoration.setImage(errorImage);
 		projectControlDecoration.hide();
 
 		projectSettingsButton = new Button(grpProjectSettings, SWT.NONE);
 		projectSettingsButton.setSize(50, 25);
 		projectSettingsButton
-				.addSelectionListener(new BtnNewButtonSelectionListener());
+			.addSelectionListener(new BtnNewButtonSelectionListener());
 		projectSettingsButton.setText("Browse");
 		new Label(grpProjectSettings, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
@@ -227,7 +227,7 @@ public class ModelPathsPage extends WizardPage {
 			if (selectedProject != null) {
 				projectControlDecoration.show();
 				pageComplete = false;
-			}else{
+			} else {
 				projectControlDecoration.hide();
 			}
 		}
@@ -263,8 +263,8 @@ public class ModelPathsPage extends WizardPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
-					getShell(), new WorkbenchLabelProvider(),
-					new BaseWorkbenchContentProvider());
+				getShell(), new WorkbenchLabelProvider(),
+				new BaseWorkbenchContentProvider());
 
 			final String modelType;
 			final String modelExtension;
@@ -286,7 +286,7 @@ public class ModelPathsPage extends WizardPage {
 			dialog.addFilter(new ViewerFilter() {
 				@Override
 				public boolean select(Viewer viewer, Object parentElement,
-						Object element) {
+					Object element) {
 					if (element instanceof IFile) {
 						IFile file = (IFile) element;
 						return file.getName().endsWith(modelExtension);
@@ -334,8 +334,8 @@ public class ModelPathsPage extends WizardPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
-					getShell(), new WorkbenchLabelProvider(),
-					new BaseWorkbenchContentProvider());
+				getShell(), new WorkbenchLabelProvider(),
+				new BaseWorkbenchContentProvider());
 
 			dialog.setTitle("Select Play Application");
 			dialog.setMessage("Select your Play Application Project");
@@ -343,7 +343,7 @@ public class ModelPathsPage extends WizardPage {
 			dialog.addFilter(new ViewerFilter() {
 				@Override
 				public boolean select(Viewer viewer, Object parentElement,
-						Object element) {
+					Object element) {
 					if (element instanceof IProject) {
 						return true;
 					}
@@ -389,7 +389,7 @@ public class ModelPathsPage extends WizardPage {
 			boolean found = false;
 			for (IProject project : workspace.getRoot().getProjects()) {
 				String searchName = projectSettingsText.getText() != null ? projectSettingsText
-						.getText().trim() : "";
+					.getText().trim() : "";
 				if (searchName.equals(project.getName())) {
 					selectedProject = project;
 					found = true;

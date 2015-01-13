@@ -12,23 +12,23 @@ public class ClassMapping {
 
 	public static final String[] stringIdentifier = new String[] { "EString" };
 	public static final String[] numberIdentifier = new String[] { "EDouble",
-			"EDoubleObject", "EFloat", "EFloatObject" };
+		"EDoubleObject", "EFloat", "EFloatObject" };
 
 	public static final String[] integerIdentifier = new String[] {
-			"EBigDecimal", "EBigInteger", "EByte", "EByteObject", "EChar",
-			"ECharacterObject", "EInt", "EIntegerObject", "ELong",
-			"ELongObject", "EShort", "EShortObject" };
+		"EBigDecimal", "EBigInteger", "EByte", "EByteObject", "EChar",
+		"ECharacterObject", "EInt", "EIntegerObject", "ELong",
+		"ELongObject", "EShort", "EShortObject" };
 
 	public static final String[] booleanIdentifier = new String[] { "EBoolean",
-			"EBooleanObject" };
+		"EBooleanObject" };
 
 	public static final String[] dateIdentifier = new String[] { "EDate" };
 
 	public static final String[] unsupportedIdentifier = new String[] {
-			"EByteArray", "EDiagnosticChain", "EElist<E>", "EEnumerator",
-			"EFeatureMap", "EFeatureMapEntry", "EInvocationTargetException",
-			"EJavaClass<T>", "EJavaObject", "EMap<K,V>", "EResource",
-			"EResourceSet", "ETreeIterator<E>" };
+		"EByteArray", "EDiagnosticChain", "EElist<E>", "EEnumerator",
+		"EFeatureMap", "EFeatureMapEntry", "EInvocationTargetException",
+		"EJavaClass<T>", "EJavaObject", "EMap<K,V>", "EResource",
+		"EResourceSet", "ETreeIterator<E>" };
 
 	private List<EEnum> enums = new ArrayList<EEnum>();
 
@@ -58,11 +58,11 @@ public class ClassMapping {
 		} else if (Arrays.asList(dateIdentifier).contains(eAttributeName)) {
 			return "qbDateTime";
 		} else if (Arrays.asList(unsupportedIdentifier)
-				.contains(eAttributeName)) {
+			.contains(eAttributeName)) {
 			return "unsupported";
 		} else if (eType.getInstanceTypeName() != null
-				&& eType.getInstanceTypeName().equals(
-						"javax.xml.datatype.XMLGregorianCalendar")) {
+			&& eType.getInstanceTypeName().equals(
+				"javax.xml.datatype.XMLGregorianCalendar")) {
 			return "qbDateTime";
 		} else {
 			// check for enums
@@ -79,7 +79,7 @@ public class ClassMapping {
 	private String enumToQB(EEnum eEnum) {
 		String result = "";
 		List<EEnumLiteral> literals = new ArrayList<EEnumLiteral>(
-				eEnum.getELiterals());
+			eEnum.getELiterals());
 		if (literals.size() > 0) {
 			result += "\"" + literals.get(0).getLiteral() + "\"";
 			literals.remove(0);

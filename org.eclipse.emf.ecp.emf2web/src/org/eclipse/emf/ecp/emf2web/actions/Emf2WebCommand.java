@@ -16,7 +16,7 @@ public class Emf2WebCommand extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final IStructuredSelection selection = (IStructuredSelection) HandlerUtil
-				.getCurrentSelection(event);
+			.getCurrentSelection(event);
 
 		final ViewModelExportWizard wizard = new ViewModelExportWizard();
 
@@ -27,14 +27,14 @@ public class Emf2WebCommand extends AbstractHandler {
 				if (file.getLocation().getFileExtension().equals("ecore")) {
 					wizard.setEcoreModel(file);
 				} else if (file.getLocation().getFileExtension()
-						.equals("genmodel")) {
+					.equals("genmodel")) {
 					wizard.setGenModel(file);
 				}
 			}
 		}
 
 		final WizardDialog dialog = new WizardDialog(
-				HandlerUtil.getActiveShell(event), wizard);
+			HandlerUtil.getActiveShell(event), wizard);
 		dialog.open();
 
 		return null;

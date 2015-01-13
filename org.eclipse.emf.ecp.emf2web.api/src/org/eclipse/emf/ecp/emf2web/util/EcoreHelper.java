@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 public class EcoreHelper {
 
 	public static void setAttributes(EObject eObject,
-			Map<String, Object> attributes) {
+		Map<String, Object> attributes) {
 		for (Entry<String, Object> entry : attributes.entrySet()) {
 			if (entry.getKey().equals("id")) {
 				// skip because not present in eObject
@@ -23,7 +23,7 @@ public class EcoreHelper {
 					Object attributeValue;
 					try {
 						attributeValue = ClassMapping.convertObject(eAttribute,
-								entry.getValue());
+							entry.getValue());
 						if (attributeValue != null) {
 							eObject.eSet(eAttribute, attributeValue);
 						}

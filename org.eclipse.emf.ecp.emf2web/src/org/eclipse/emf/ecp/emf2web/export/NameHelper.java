@@ -18,20 +18,20 @@ public class NameHelper {
 
 	public NameHelper() {
 		composedAdapterFactory = new ComposedAdapterFactory(
-				new AdapterFactory[] {
-						new CustomReflectiveItemProviderAdapterFactory(),
-						new ComposedAdapterFactory(
-								ComposedAdapterFactory.Descriptor.Registry.INSTANCE) });
+			new AdapterFactory[] {
+				new CustomReflectiveItemProviderAdapterFactory(),
+				new ComposedAdapterFactory(
+					ComposedAdapterFactory.Descriptor.Registry.INSTANCE) });
 
 		adapterFactoryItemDelegator = new AdapterFactoryItemDelegator(
-				composedAdapterFactory);
+			composedAdapterFactory);
 	}
 
 	private final IItemPropertyDescriptor getItemPropertyDescriptor(
-			Setting setting) {
+		Setting setting) {
 		final IItemPropertyDescriptor descriptor = adapterFactoryItemDelegator
-				.getPropertyDescriptor(setting.getEObject(),
-						setting.getEStructuralFeature());
+			.getPropertyDescriptor(setting.getEObject(),
+				setting.getEStructuralFeature());
 		return descriptor;
 	}
 
@@ -43,7 +43,7 @@ public class NameHelper {
 	public String getDisplayName(EClass eClass, EStructuralFeature feat) {
 		EObject object = EcoreUtil.create(eClass);
 		IItemPropertyDescriptor descriptor = adapterFactoryItemDelegator
-				.getPropertyDescriptor(object, feat);
+			.getPropertyDescriptor(object, feat);
 		if (descriptor != null) {
 			return descriptor.getDisplayName(object);
 		}

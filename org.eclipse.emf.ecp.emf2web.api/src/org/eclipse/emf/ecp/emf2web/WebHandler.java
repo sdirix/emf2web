@@ -38,7 +38,7 @@ public class WebHandler {
 
 		JSONCrudOperator operator = new JSONCrudOperator();
 		List<Map<String, Object>> jsonElements = operator.readElements(url,
-				eClass.getName().toLowerCase());
+			eClass.getName().toLowerCase());
 
 		for (Map<String, Object> jsonElement : jsonElements) {
 			EObject eObject = EcoreUtil.create(eClass);
@@ -59,13 +59,13 @@ public class WebHandler {
 
 	public boolean createWebElement(EObject eObject) throws IOException {
 		Map<String, Object> jsonDescription = ClassMapping
-				.eObjectToMap(eObject);
+			.eObjectToMap(eObject);
 
 		String type = eObject.eClass().getName().toLowerCase();
 
 		JSONCrudOperator operator = new JSONCrudOperator();
 		Map<String, Object> response = operator.createElement(url, type,
-				jsonDescription);
+			jsonDescription);
 
 		String id = getId(response);
 
@@ -77,7 +77,7 @@ public class WebHandler {
 
 	public boolean updateWebElement(EObject eObject) throws IOException {
 		Map<String, Object> jsonDescription = ClassMapping
-				.eObjectToMap(eObject);
+			.eObjectToMap(eObject);
 
 		WebInfo webInfo = infoMapping.get(eObject);
 

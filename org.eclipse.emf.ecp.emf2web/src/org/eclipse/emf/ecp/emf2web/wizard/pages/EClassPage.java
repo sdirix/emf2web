@@ -56,15 +56,15 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		eClassTableViewer = CheckboxTableViewer.newCheckList(container,
-				SWT.BORDER | SWT.FULL_SELECTION);
+			SWT.BORDER | SWT.FULL_SELECTION);
 		eClassTableViewer
-				.addCheckStateListener(new EClassTableViewerICheckStateListener());
+			.addCheckStateListener(new EClassTableViewerICheckStateListener());
 		eClassTableViewer.setContentProvider(new ArrayContentProvider());
 
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
-				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+			ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		AdapterFactoryLabelProvider labelProvider = new AdapterFactoryLabelProvider(
-				composedAdapterFactory);
+			composedAdapterFactory);
 
 		eClassTableViewer.setLabelProvider(labelProvider);
 
@@ -77,7 +77,7 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 
 		List<EClass> eClassList = new ArrayList<EClass>();
 		for (Iterator<EObject> it = ecoreResource.getAllContents(); it
-				.hasNext();) {
+			.hasNext();) {
 			EObject object = it.next();
 			if (!(object instanceof EPackage)) {
 				continue;
@@ -111,7 +111,7 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 	}
 
 	private class EClassTableViewerICheckStateListener implements
-			ICheckStateListener {
+		ICheckStateListener {
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (event.getChecked()) {
 				selectedEClasses.add((EClass) event.getElement());

@@ -52,7 +52,7 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 		container.setLayout(new GridLayout(2, false));
 
 		tableViewer = new TableViewer(container, SWT.BORDER
-				| SWT.FULL_SELECTION);
+			| SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -90,8 +90,8 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
-					getShell(), new WorkbenchLabelProvider(),
-					new BaseWorkbenchContentProvider());
+				getShell(), new WorkbenchLabelProvider(),
+				new BaseWorkbenchContentProvider());
 
 			dialog.setTitle("View Model Selection");
 			dialog.setMessage("Select at least one view model from the workspace");
@@ -99,7 +99,7 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 			dialog.addFilter(new ViewerFilter() {
 				@Override
 				public boolean select(Viewer viewer, Object parentElement,
-						Object element) {
+					Object element) {
 					if (element instanceof IFile) {
 						IFile file = (IFile) element;
 						if (file.getName().toLowerCase().endsWith(".view")) {
@@ -131,7 +131,7 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			IStructuredSelection selection = (IStructuredSelection) tableViewer
-					.getSelection();
+				.getSelection();
 			selectedViewModels.removeAll(selection.toList());
 			tableViewer.refresh();
 		}

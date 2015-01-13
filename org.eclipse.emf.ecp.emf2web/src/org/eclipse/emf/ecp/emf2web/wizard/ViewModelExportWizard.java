@@ -53,19 +53,19 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	private ViewModelsPage viewModelPage;
 
 	private boolean createNewPlayApplication = false;
-	
+
 	public IFile getEcoreModel() {
 		return ecoreModel;
 	}
-	
-	public void setCreateNewPlayApplication(boolean create){
+
+	public void setCreateNewPlayApplication(boolean create) {
 		createNewPlayApplication = create;
 	}
 
 	public void setEcoreModel(IFile ecoreModel) {
 		if (this.ecoreModel != null) {
 			if (this.ecoreModel.getLocation().toString()
-					.equals(ecoreModel.getLocation().toString())) {
+				.equals(ecoreModel.getLocation().toString())) {
 				return;
 			}
 		}
@@ -76,12 +76,12 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 		// needed to resolve viewmodel references
 		for (Iterator<EObject> it = ecoreResource.getAllContents(); it
-				.hasNext();) {
+			.hasNext();) {
 			EObject object = it.next();
 			if (object instanceof EPackage) {
 				EPackage ePackage = (EPackage) object;
 				resourceSet.getPackageRegistry().put(ePackage.getNsURI(),
-						ePackage);
+					ePackage);
 			}
 		}
 
@@ -123,65 +123,66 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	public boolean performFinish() {
 		File exportDirectory;
 		IProject project;
-		
 
 		if (!modelsPage.getCreateNewProject()) {
 			project = modelsPage.getSelectedProject();
 			exportDirectory = project.getLocation().toFile();
-			
-			//check if valid
+
+			// check if valid
 			if (!exportDirectory.isDirectory()) {
-				MessageDialog.openError(getShell(), "Play Application Path Error", "The chosen play application directory is not a directory!");
+				MessageDialog.openError(getShell(), "Play Application Path Error",
+					"The chosen play application directory is not a directory!");
 				return false;
 			}
-	
+
 			if (!exportDirectory.exists()) {
 				if (!exportDirectory.mkdirs()) {
-					MessageDialog.openError(getShell(), "Play Application Path Error", "The chosen path for the play application could not be generated!");
+					MessageDialog.openError(getShell(), "Play Application Path Error",
+						"The chosen path for the play application could not be generated!");
 					return false;
 				}
 			}
-		}else{
+		} else {
 			Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
 			URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
-			
+
 			String name = modelsPage.getProjectName();
-			if(name == null || name.trim().equals("")){
+			if (name == null || name.trim().equals("")) {
 				name = "playapplication";
 			}
-			
+
 			File source = null;
 			try {
 				URL resolvedURL = FileLocator.resolve(fileURL);
-				
-				//eclipse bug #145096
+
+				// eclipse bug #145096
 				String resolvedString = resolvedURL.getFile();
 				resolvedString = "file:" + resolvedString.replaceAll(" ", "%20");
 				URL escapedURL = new URL(resolvedString);
-				
-			    source = new File(escapedURL.toURI());
-			    
-			    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			    File workspaceDirectory = workspace.getRoot().getLocation().toFile();
-			    
-			    File destination = new File(workspaceDirectory, name);
-			    destination.mkdir();
-			    
-			    exportDirectory = destination;
-			    
-			    FileUtils.copyDirectory(source, destination);
-			    
-			    //register project in eclipse
-			    project = importProject(destination, name);
-			
+
+				source = new File(escapedURL.toURI());
+
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+
+				File destination = new File(workspaceDirectory, name);
+				destination.mkdir();
+
+				exportDirectory = destination;
+
+				FileUtils.copyDirectory(source, destination);
+
+				// register project in eclipse
+				project = importProject(destination, name);
+
 			} catch (URISyntaxException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
-			    e.printStackTrace();
-			    return false;
+				e.printStackTrace();
+				return false;
 			} catch (IOException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
-			    e.printStackTrace();
-			    return false;
+				e.printStackTrace();
+				return false;
 			} catch (CoreException e) {
 				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
 				e.printStackTrace();
@@ -202,20 +203,20 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 		Emf2QbExporter exporter = new Emf2QbExporter();
 		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
-		
+
 		try {
 			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
 			MessageDialog.openError(getShell(), "Refresh Error", e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
-	
+
 	private IProject importProject(final File baseDirectory, final String projectName) throws CoreException {
 		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
-				new Path(baseDirectory.getAbsolutePath() + "/.project"));
+			new Path(baseDirectory.getAbsolutePath() + "/.project"));
 		description.setName(projectName);
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		project.create(description, null);
@@ -233,7 +234,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 				if (file.getLocation().getFileExtension().equals("ecore")) {
 					setEcoreModel(file);
 				} else if (file.getLocation().getFileExtension()
-						.equals("genmodel")) {
+					.equals("genmodel")) {
 					genModel = file;
 				}
 			}

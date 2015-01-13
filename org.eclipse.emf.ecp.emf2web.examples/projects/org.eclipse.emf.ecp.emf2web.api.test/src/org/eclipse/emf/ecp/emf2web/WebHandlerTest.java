@@ -22,7 +22,7 @@ public class WebHandlerTest {
 		WebHandler webHandler = new WebHandler("http://localhost:9000");
 
 		List<EObject> elements = webHandler
-				.getWebElements(TaskPackage.eINSTANCE.getUser());
+			.getWebElements(TaskPackage.eINSTANCE.getUser());
 
 		int initialNewUserCount = getFirstNameCount(elements, "New User");
 		int initialEditedUserCount = getFirstNameCount(elements, "Edited User");
@@ -30,7 +30,7 @@ public class WebHandlerTest {
 		User newUser = TaskFactory.eINSTANCE.createUser();
 		newUser.setActive(false);
 		newUser.setDateOfBirth(DatatypeFactory.newInstance()
-				.newXMLGregorianCalendar());
+			.newXMLGregorianCalendar());
 		newUser.setEmail("user@localhost");
 		newUser.setFirstName("New User");
 		newUser.setLastName("Last");
