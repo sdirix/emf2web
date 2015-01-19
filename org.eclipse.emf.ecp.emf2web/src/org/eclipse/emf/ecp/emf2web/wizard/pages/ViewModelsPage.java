@@ -37,7 +37,11 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
+/**
+ * Page for selecting view models from the workspace.
+ *
+ */
+public class ViewModelsPage extends WizardPage {
 
 	private final Set<IFile> selectedViewModels;
 	private TableViewer tableViewer;
@@ -46,9 +50,9 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 	 * Create the wizard.
 	 */
 	public ViewModelsPage() {
-		super("wizardPage");
-		setTitle("View Model Selection");
-		setDescription("Add all non-default view models");
+		super(Messages.ViewModelsPage_ConstructorTitle);
+		setTitle(Messages.ViewModelsPage_Title);
+		setDescription(Messages.ViewModelsPage_Description);
 
 		selectedViewModels = new LinkedHashSet<IFile>();
 	}
@@ -80,26 +84,35 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 
 		final Button btnAdd = new Button(composite, SWT.NONE);
 		btnAdd.addSelectionListener(new BtnAddSelectionListener());
-		btnAdd.setText("Add...");
+		btnAdd.setText(Messages.ViewModelsPage_AddButton);
 
 		final Button btnNewButton = new Button(composite, SWT.NONE);
-		btnNewButton.addSelectionListener(new BtnNewButtonSelectionListener());
-		btnNewButton.setText("Remove");
+		btnNewButton.addSelectionListener(new RemoveButtonSelectionListener());
+		btnNewButton.setText(Messages.ViewModelsPage_RemoveButton);
 	}
 
+	/**
+	 * Returns the selected view models.
+	 *
+	 * @return
+	 *         A collection of the selected view models.
+	 */
 	public Set<IFile> getSelectedViewModels() {
 		return selectedViewModels;
 	}
 
+	/**
+	 * Resets the selected view models.
+	 *
+	 */
 	public void clear() {
 		selectedViewModels.clear();
 	}
 
-	@Override
-	public void onEnterPage() {
-		tableViewer.refresh();
-	}
-
+	/**
+	 * Selection Listener for the "Add" Button.
+	 *
+	 */
 	private class BtnAddSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
@@ -107,8 +120,8 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 				getShell(), new WorkbenchLabelProvider(),
 				new BaseWorkbenchContentProvider());
 
-			dialog.setTitle("View Model Selection");
-			dialog.setMessage("Select at least one view model from the workspace");
+			dialog.setTitle(Messages.ViewModelsPage_ViewModelDialog_Title);
+			dialog.setMessage(Messages.ViewModelsPage_ViewModelDialog_Description);
 
 			dialog.addFilter(new ViewerFilter() {
 				@Override
@@ -116,10 +129,10 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 					Object element) {
 					if (element instanceof IFile) {
 						final IFile file = (IFile) element;
-						if (file.getName().toLowerCase().endsWith(".view")) {
+						if (file.getName().toLowerCase().endsWith(".view")) { //$NON-NLS-1$
 							return true;
 						}
-						if (file.getName().toLowerCase().endsWith(".viewmodel")) {
+						if (file.getName().toLowerCase().endsWith(".viewmodel")) { //$NON-NLS-1$
 							return true;
 						}
 						return false;
@@ -141,7 +154,11 @@ public class ViewModelsPage extends WizardPage implements IOnEnterWizardPage {
 		}
 	}
 
-	private class BtnNewButtonSelectionListener extends SelectionAdapter {
+	/**
+	 * Selection Listener for the "Remove" Button.
+	 *
+	 */
+	private class RemoveButtonSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			final IStructuredSelection selection = (IStructuredSelection) tableViewer

@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.wizard.pages;
 
+import java.text.MessageFormat;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -92,9 +94,9 @@ public class ModelPathsPage extends WizardPage {
 	 *            preselected.
 	 */
 	public ModelPathsPage(IFile ecoreModel, IFile genModel) {
-		super("wizardPage"); //$NON-NLS-1$
-		setTitle("ECP Model Exporter"); //$NON-NLS-1$
-		setDescription("Select the models and the project to export to"); //$NON-NLS-1$
+		super(Messages.ModelPathsPage_ConstructorTitle);
+		setTitle(Messages.ModelPathsPage_Title);
+		setDescription(Messages.ModelPathsPage_Description);
 		ecoreModelFile = ecoreModel;
 		genModelFile = genModel;
 	}
@@ -199,7 +201,7 @@ public class ModelPathsPage extends WizardPage {
 		container.setLayout(new GridLayout(2, false));
 
 		final Label lblEmfEcoreModel = new Label(container, SWT.NONE);
-		lblEmfEcoreModel.setText("EMF Ecore Model"); //$NON-NLS-1$
+		lblEmfEcoreModel.setText(Messages.ModelPathsPage_EMFEcoreModel);
 		new Label(container, SWT.NONE);
 
 		ecoremodelText = new Text(container, SWT.BORDER);
@@ -209,16 +211,16 @@ public class ModelPathsPage extends WizardPage {
 
 		ecoreControlDecoration = new ControlDecoration(ecoremodelText, SWT.LEFT
 			| SWT.TOP);
-		ecoreControlDecoration.setDescriptionText("Please enter a valid file"); //$NON-NLS-1$
+		ecoreControlDecoration.setDescriptionText(Messages.ModelPathsPage_ValidFileError);
 		ecoreControlDecoration.setImage(errorImage);
 		ecoreControlDecoration.hide();
 
 		ecoreBrowse = new Button(container, SWT.NONE);
 		ecoreBrowse.addSelectionListener(new EcoreBrowseSelectionListener());
-		ecoreBrowse.setText("Browse"); //$NON-NLS-1$
+		ecoreBrowse.setText(Messages.ModelPathsPage_Browse);
 
 		final Label lblEmfEcoreGen = new Label(container, SWT.NONE);
-		lblEmfEcoreGen.setText("EMF Ecore Gen Model (optional)"); //$NON-NLS-1$
+		lblEmfEcoreGen.setText(Messages.ModelPathsPage_GenModel);
 		new Label(container, SWT.NONE);
 
 		genmodelText = new Text(container, SWT.BORDER);
@@ -227,20 +229,20 @@ public class ModelPathsPage extends WizardPage {
 
 		genControlDecoration = new ControlDecoration(genmodelText, SWT.LEFT
 			| SWT.TOP);
-		genControlDecoration.setDescriptionText("Please enter a valid file"); //$NON-NLS-1$
+		genControlDecoration.setDescriptionText(Messages.ModelPathsPage_ValidFileError);
 		genControlDecoration.setImage(errorImage);
 		genControlDecoration.hide();
 
 		genBrowse = new Button(container, SWT.NONE);
 		genBrowse.addSelectionListener(new EcoreBrowseSelectionListener());
-		genBrowse.setText("Browse"); //$NON-NLS-1$
+		genBrowse.setText(Messages.ModelPathsPage_Browse);
 		new Label(container, SWT.NONE);
 		new Label(container, SWT.NONE);
 
 		grpProjectSettings = new Group(container, SWT.NONE);
 		grpProjectSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
 			false, false, 2, 1));
-		grpProjectSettings.setText("Project Settings"); //$NON-NLS-1$
+		grpProjectSettings.setText(Messages.ModelPathsPage_ProjectSettings);
 		grpProjectSettings.setLayout(new GridLayout(1, false));
 
 		final Composite actionComposite = new Composite(grpProjectSettings, SWT.NONE);
@@ -250,16 +252,16 @@ public class ModelPathsPage extends WizardPage {
 		actionComposite.setLayout(new GridLayout(3, false));
 
 		final Label lblNewLabel = new Label(actionComposite, SWT.NONE);
-		lblNewLabel.setText("Action:"); //$NON-NLS-1$
+		lblNewLabel.setText(Messages.ModelPathsPage_Action);
 
 		btnUpdateExistingProject = new Button(actionComposite, SWT.RADIO);
 		btnUpdateExistingProject.setSelection(true);
 		btnUpdateExistingProject.addSelectionListener(new BtnUpdateExistingApplicationSelectionListener());
-		btnUpdateExistingProject.setText("Update existing Application"); //$NON-NLS-1$
+		btnUpdateExistingProject.setText(Messages.ModelPathsPage_UpdateExisting);
 
 		btnCreateANew = new Button(actionComposite, SWT.RADIO);
 		btnCreateANew.addSelectionListener(new BtnCreateANewSelectionListener());
-		btnCreateANew.setText("Create new Application"); //$NON-NLS-1$
+		btnCreateANew.setText(Messages.ModelPathsPage_CreateNew);
 
 		selectProjectComposite = new Composite(grpProjectSettings, SWT.NONE);
 		selectProjectComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -268,7 +270,7 @@ public class ModelPathsPage extends WizardPage {
 		selectProjectLabel = new Label(selectProjectComposite, SWT.NONE);
 		selectProjectLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		selectProjectLabel.setBounds(0, 0, 493, 15);
-		selectProjectLabel.setText("Select Project"); //$NON-NLS-1$
+		selectProjectLabel.setText(Messages.ModelPathsPage_SelectProject);
 
 		new Label(selectProjectComposite, SWT.NONE);
 
@@ -276,20 +278,20 @@ public class ModelPathsPage extends WizardPage {
 		projectPathText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		projectPathText.setSize(493, 21);
 		projectPathText
-		.addModifyListener(new ProjectPathTextModifyListener());
+			.addModifyListener(new ProjectPathTextModifyListener());
 
 		projectControlDecoration = new ControlDecoration(projectPathText,
 			SWT.LEFT | SWT.TOP);
 		projectControlDecoration
-		.setDescriptionText("Please enter a valid project name"); //$NON-NLS-1$
+			.setDescriptionText(Messages.ModelPathsPage_ValidNameError);
 		projectControlDecoration.setImage(errorImage);
 		projectControlDecoration.hide();
 
 		selectProjectButton = new Button(selectProjectComposite, SWT.NONE);
 		selectProjectButton.setSize(50, 25);
 		selectProjectButton
-		.addSelectionListener(new BrowseApplicationSelectionListener());
-		selectProjectButton.setText("Browse"); //$NON-NLS-1$
+			.addSelectionListener(new BrowseApplicationSelectionListener());
+		selectProjectButton.setText(Messages.ModelPathsPage_Browse);
 
 		locationButtonsComposite = new Composite(selectProjectComposite, SWT.NONE);
 		locationButtonsComposite.setLayout(new GridLayout(2, false));
@@ -297,11 +299,11 @@ public class ModelPathsPage extends WizardPage {
 		btnInWorkspace = new Button(locationButtonsComposite, SWT.RADIO);
 		btnInWorkspace.setSelection(true);
 		btnInWorkspace.addSelectionListener(new BtnInWorkspaceSelectionListener());
-		btnInWorkspace.setText("In Workspace"); //$NON-NLS-1$
+		btnInWorkspace.setText(Messages.ModelPathsPage_Workspace);
 
 		btnInFileSystem = new Button(locationButtonsComposite, SWT.RADIO);
 		btnInFileSystem.addSelectionListener(new BtnInFileSystemSelectionListener());
-		btnInFileSystem.setText("In File System"); //$NON-NLS-1$
+		btnInFileSystem.setText(Messages.ModelPathsPage_FileSystem);
 		new Label(selectProjectComposite, SWT.NONE);
 		new Label(grpProjectSettings, SWT.NONE);
 
@@ -311,7 +313,7 @@ public class ModelPathsPage extends WizardPage {
 
 		lblSelectProjectTemplate = new Label(projectTemplateComposite, SWT.NONE);
 		lblSelectProjectTemplate.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lblSelectProjectTemplate.setText("Select Application Template (Zip)"); //$NON-NLS-1$
+		lblSelectProjectTemplate.setText(Messages.ModelPathsPage_ApplicationTemplate);
 
 		new Label(projectTemplateComposite, SWT.NONE);
 
@@ -321,10 +323,10 @@ public class ModelPathsPage extends WizardPage {
 
 		projectTemplateButton = new Button(projectTemplateComposite, SWT.NONE);
 		projectTemplateButton.addSelectionListener(new ApplicationTemplateButtonSelectionListener());
-		projectTemplateButton.setText("Browse"); //$NON-NLS-1$
+		projectTemplateButton.setText(Messages.ModelPathsPage_Browse);
 
 		lblDownloadFrom = new Label(projectTemplateComposite, SWT.NONE);
-		lblDownloadFrom.setText("... Download from http://download.com"); //$NON-NLS-1$
+		lblDownloadFrom.setText(Messages.ModelPathsPage_DownloadLink);
 		new Label(projectTemplateComposite, SWT.NONE);
 
 		new Label(grpProjectSettings, SWT.NONE);
@@ -372,7 +374,7 @@ public class ModelPathsPage extends WizardPage {
 			pageComplete = false;
 		} else if (!ecoreModelFile.exists()) {
 			ecoreControlDecoration.show();
-			message = "Please enter a valid ecore file"; //$NON-NLS-1$
+			message = Messages.ModelPathsPage_ValidEcoreError;
 			pageComplete = false;
 		} else {
 			ecoreControlDecoration.hide();
@@ -411,17 +413,17 @@ public class ModelPathsPage extends WizardPage {
 			final Text modelText;
 
 			if (e.getSource() == ecoreBrowse) {
-				modelType = "Ecore Model"; //$NON-NLS-1$
+				modelType = Messages.ModelPathsPage_EcoreModel;
 				modelExtension = ".ecore"; //$NON-NLS-1$
 				modelText = ecoremodelText;
 			} else {
-				modelType = "Ecore Gen Model"; //$NON-NLS-1$
+				modelType = Messages.ModelPathsPage_EcoreGenModel;
 				modelExtension = ".genmodel"; //$NON-NLS-1$
 				modelText = genmodelText;
 			}
 
-			dialog.setTitle(modelType + " Selection"); //$NON-NLS-1$
-			dialog.setMessage("Select a " + modelType + " from the workspace"); //$NON-NLS-1$ //$NON-NLS-2$
+			dialog.setTitle(modelType + Messages.ModelPathsPage_DialogTitle);
+			dialog.setMessage(MessageFormat.format(Messages.ModelPathsPage_DialogMessage, modelType));
 
 			dialog.addFilter(new ViewerFilter() {
 				@Override
@@ -487,8 +489,8 @@ public class ModelPathsPage extends WizardPage {
 					getShell(), new WorkbenchLabelProvider(),
 					new BaseWorkbenchContentProvider());
 
-				dialog.setTitle("Select Play Application"); //$NON-NLS-1$
-				dialog.setMessage("Select your Play Application Project"); //$NON-NLS-1$
+				dialog.setTitle(Messages.ModelPathsPage_ApplicationDialog_Title);
+				dialog.setMessage(Messages.ModelPathsPage_ApplicationDialog_Message);
 
 				dialog.addFilter(new ViewerFilter() {
 					@Override
@@ -514,7 +516,7 @@ public class ModelPathsPage extends WizardPage {
 			} else {
 				// in file system
 				final DirectoryDialog dialog = new DirectoryDialog(getShell());
-				dialog.setMessage("Select your Play Application Project"); //$NON-NLS-1$
+				dialog.setMessage(Messages.ModelPathsPage_ApplicationDialog_Message);
 
 				final String path = dialog.open();
 				if (path != null) {
@@ -538,10 +540,10 @@ public class ModelPathsPage extends WizardPage {
 			for (final IProject project : workspace.getRoot().getProjects()) {
 				final String searchName = projectPathText.getText() != null ? projectPathText
 					.getText().trim() : ""; //$NON-NLS-1$
-					if (searchName.equals(project.getName())) {
-						selectedProject = project;
-						found = true;
-					}
+				if (searchName.equals(project.getName())) {
+					selectedProject = project;
+					found = true;
+				}
 			}
 			if (!found) {
 				selectedProject = null;
@@ -640,7 +642,7 @@ public class ModelPathsPage extends WizardPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			final FileDialog dialog = new FileDialog(getShell());
-			dialog.setFilterExtensions(new String[] { "*.zip", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+			dialog.setFilterExtensions(new String[] { "*.zip", "*.*" }); //$NON-NLS-1$//$NON-NLS-2$
 			dialog.setFilterNames(new String[] { Messages.ModelPathsPage_TemplateZipFile,
 				Messages.ModelPathsPage_AllFiles });
 			final String path = dialog.open();
