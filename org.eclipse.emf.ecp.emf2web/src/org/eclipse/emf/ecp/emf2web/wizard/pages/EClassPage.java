@@ -39,8 +39,6 @@ import org.eclipse.swt.widgets.Composite;
 /**
  * Page for selecting an EClass out of an Ecore model.
  *
- * @author Stefan Dirix
- *
  */
 public class EClassPage extends WizardPage {
 
@@ -60,9 +58,9 @@ public class EClassPage extends WizardPage {
 	 * Create the wizard.
 	 */
 	public EClassPage() {
-		super("EClass Selection");
-		setTitle("EClass Selection");
-		setDescription("Select at least one EClass to export");
+		super(Messages.EClassPage_ConstructorTitle);
+		setTitle(Messages.EClassPage_Title);
+		setDescription(Messages.EClassPage_Description);
 
 		selectedEClasses = new HashSet<EClass>();
 	}
@@ -82,7 +80,7 @@ public class EClassPage extends WizardPage {
 		eClassTableViewer = CheckboxTableViewer.newCheckList(container,
 			SWT.BORDER | SWT.FULL_SELECTION);
 		eClassTableViewer
-			.addCheckStateListener(new EClassTableViewerICheckStateListener());
+		.addCheckStateListener(new EClassTableViewerICheckStateListener());
 		eClassTableViewer.setContentProvider(new ArrayContentProvider());
 
 		final ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
@@ -143,7 +141,7 @@ public class EClassPage extends WizardPage {
 	 *
 	 */
 	private class EClassTableViewerICheckStateListener implements
-		ICheckStateListener {
+	ICheckStateListener {
 		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (event.getChecked()) {
