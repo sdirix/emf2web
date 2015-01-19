@@ -23,6 +23,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/**
+ * Command for opening a Dialog for converting Ecore models and view models to the qb Play Application format.
+ *
+ */
 public class Emf2WebCommand extends AbstractHandler {
 
 	@Override
@@ -32,14 +36,15 @@ public class Emf2WebCommand extends AbstractHandler {
 
 		final ViewModelExportWizard wizard = new ViewModelExportWizard();
 
-		for (final Iterator<Object> it = selection.iterator(); it.hasNext();) {
+		for (@SuppressWarnings("unchecked")
+		final Iterator<Object> it = selection.iterator(); it.hasNext();) {
 			final Object selectedObject = it.next();
 			if (selectedObject instanceof IFile) {
 				final IFile file = (IFile) selectedObject;
-				if (file.getLocation().getFileExtension().equals("ecore")) {
+				if (file.getLocation().getFileExtension().equals("ecore")) { //$NON-NLS-1$
 					wizard.setEcoreModel(file);
 				} else if (file.getLocation().getFileExtension()
-					.equals("genmodel")) {
+					.equals("genmodel")) { //$NON-NLS-1$
 					wizard.setGenModel(file);
 				}
 			}
