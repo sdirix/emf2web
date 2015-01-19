@@ -56,7 +56,7 @@ public class ModelPathsPage extends WizardPage {
 	private Button selectProjectButton;
 
 	private Group grpProjectSettings;
-	private Text projectSettingsText;
+	private Text projectPathText;
 	private Label selectProjectLabel;
 
 	private ControlDecoration projectControlDecoration;
@@ -72,7 +72,7 @@ public class ModelPathsPage extends WizardPage {
 	private Button btnInWorkspace;
 	private Button btnInFileSystem;
 
-	private boolean isCreateNewProject;
+	private boolean isCreateNewApplication;
 	private boolean isInFileSystem;
 	private IProject selectedProject;
 	private String projectPath;
@@ -82,7 +82,14 @@ public class ModelPathsPage extends WizardPage {
 	private IFile genModelFile;
 
 	/**
-	 * Create the wizard.
+	 * Create a model selection page where the given models are preselected.
+	 *
+	 * @param ecoreModel
+	 *            The {@link IFile} containing the ecore model. Use {@code null} if no ecore model shall be
+	 *            preselected.
+	 * @param genModel
+	 *            The {@link IFile} containing the gen model. Use {@code null} if no gen model shall be
+	 *            preselected.
 	 */
 	public ModelPathsPage(IFile ecoreModel, IFile genModel) {
 		super("wizardPage"); //$NON-NLS-1$
@@ -112,7 +119,7 @@ public class ModelPathsPage extends WizardPage {
 	 * @return {@code true} if the user wants to create a new project, {@code false} otherwise.
 	 */
 	public boolean isCreateNewApplication() {
-		return isCreateNewProject;
+		return isCreateNewApplication;
 	}
 
 	/**
@@ -121,7 +128,7 @@ public class ModelPathsPage extends WizardPage {
 	 * @return {@code true} if the user wants to update an existing project, {@code false} otherwise.
 	 */
 	public boolean isUpdateProject() {
-		return !isCreateNewProject;
+		return !isCreateNewApplication;
 	}
 
 	/**
@@ -188,11 +195,6 @@ public class ModelPathsPage extends WizardPage {
 				FieldDecorationRegistry.DEC_ERROR);
 		final Image errorImage = errorFieldDecoration.getImage();
 
-		final FieldDecoration warningFieldDecoration = FieldDecorationRegistry
-			.getDefault().getFieldDecoration(
-				FieldDecorationRegistry.DEC_WARNING);
-		final Image warningImage = warningFieldDecoration.getImage();
-
 		setControl(container);
 		container.setLayout(new GridLayout(2, false));
 
@@ -252,7 +254,7 @@ public class ModelPathsPage extends WizardPage {
 
 		btnUpdateExistingProject = new Button(actionComposite, SWT.RADIO);
 		btnUpdateExistingProject.setSelection(true);
-		btnUpdateExistingProject.addSelectionListener(new BtnUpdateExistingProjectSelectionListener());
+		btnUpdateExistingProject.addSelectionListener(new BtnUpdateExistingApplicationSelectionListener());
 		btnUpdateExistingProject.setText("Update existing Application"); //$NON-NLS-1$
 
 		btnCreateANew = new Button(actionComposite, SWT.RADIO);
@@ -270,13 +272,13 @@ public class ModelPathsPage extends WizardPage {
 
 		new Label(selectProjectComposite, SWT.NONE);
 
-		projectSettingsText = new Text(selectProjectComposite, SWT.BORDER);
-		projectSettingsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		projectSettingsText.setSize(493, 21);
-		projectSettingsText
-		.addModifyListener(new ProjectSettingsTextModifyListener());
+		projectPathText = new Text(selectProjectComposite, SWT.BORDER);
+		projectPathText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		projectPathText.setSize(493, 21);
+		projectPathText
+		.addModifyListener(new ProjectPathTextModifyListener());
 
-		projectControlDecoration = new ControlDecoration(projectSettingsText,
+		projectControlDecoration = new ControlDecoration(projectPathText,
 			SWT.LEFT | SWT.TOP);
 		projectControlDecoration
 		.setDescriptionText("Please enter a valid project name"); //$NON-NLS-1$
@@ -286,7 +288,7 @@ public class ModelPathsPage extends WizardPage {
 		selectProjectButton = new Button(selectProjectComposite, SWT.NONE);
 		selectProjectButton.setSize(50, 25);
 		selectProjectButton
-		.addSelectionListener(new BtnNewButtonSelectionListener());
+		.addSelectionListener(new BrowseApplicationSelectionListener());
 		selectProjectButton.setText("Browse"); //$NON-NLS-1$
 
 		locationButtonsComposite = new Composite(selectProjectComposite, SWT.NONE);
@@ -314,18 +316,18 @@ public class ModelPathsPage extends WizardPage {
 		new Label(projectTemplateComposite, SWT.NONE);
 
 		projectTemplateText = new Text(projectTemplateComposite, SWT.BORDER);
-		projectTemplateText.addModifyListener(new ProjectTemplateTextModifyListener());
+		projectTemplateText.addModifyListener(new ApplicationTemplateTextModifyListener());
 		projectTemplateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		projectTemplateButton = new Button(projectTemplateComposite, SWT.NONE);
-		projectTemplateButton.addSelectionListener(new ProjectTemplateButtonSelectionListener());
+		projectTemplateButton.addSelectionListener(new ApplicationTemplateButtonSelectionListener());
 		projectTemplateButton.setText("Browse"); //$NON-NLS-1$
 
 		lblDownloadFrom = new Label(projectTemplateComposite, SWT.NONE);
 		lblDownloadFrom.setText("... Download from http://download.com"); //$NON-NLS-1$
 		new Label(projectTemplateComposite, SWT.NONE);
 
-		final Label lblNewLabel_1 = new Label(grpProjectSettings, SWT.NONE);
+		new Label(grpProjectSettings, SWT.NONE);
 
 		setEnableTemplateSelection(false);
 		init();
@@ -347,7 +349,7 @@ public class ModelPathsPage extends WizardPage {
 		boolean pageComplete = true;
 		String message = null;
 
-		if (!isCreateNewProject) {
+		if (!isCreateNewApplication) {
 			if (!isInFileSystem && selectedProject == null) {
 				projectControlDecoration.show();
 				pageComplete = false;
@@ -393,6 +395,10 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * SelectionListener for the Ecore model Browse buttons.
+	 *
+	 */
 	private class EcoreBrowseSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
@@ -445,6 +451,10 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * TextModifyListener for the text containing the path to the ecore model.
+	 *
+	 */
 	private class EcoremodelTextModifyListener implements ModifyListener {
 		@Override
 		public void modifyText(ModifyEvent e) {
@@ -464,7 +474,11 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
-	private class BtnNewButtonSelectionListener extends SelectionAdapter {
+	/**
+	 * The selection listener for the Browse button of the Application text.
+	 *
+	 */
+	private class BrowseApplicationSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// in workspace
@@ -494,7 +508,7 @@ public class ModelPathsPage extends WizardPage {
 					if (result instanceof IProject) {
 						final IProject project = (IProject) result;
 						selectedProject = project;
-						projectSettingsText.setText(project.getName());
+						projectPathText.setText(project.getName());
 					}
 				}
 			} else {
@@ -504,7 +518,7 @@ public class ModelPathsPage extends WizardPage {
 
 				final String path = dialog.open();
 				if (path != null) {
-					projectSettingsText.setText(path);
+					projectPathText.setText(path);
 					selectedProject = null;
 				}
 			}
@@ -512,13 +526,17 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
-	private class ProjectSettingsTextModifyListener implements ModifyListener {
+	/**
+	 * The TextModifyListener for the project path text.
+	 *
+	 */
+	private class ProjectPathTextModifyListener implements ModifyListener {
 		@Override
 		public void modifyText(ModifyEvent e) {
 			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			boolean found = false;
 			for (final IProject project : workspace.getRoot().getProjects()) {
-				final String searchName = projectSettingsText.getText() != null ? projectSettingsText
+				final String searchName = projectPathText.getText() != null ? projectPathText
 					.getText().trim() : ""; //$NON-NLS-1$
 					if (searchName.equals(project.getName())) {
 						selectedProject = project;
@@ -528,17 +546,21 @@ public class ModelPathsPage extends WizardPage {
 			if (!found) {
 				selectedProject = null;
 			}
-			projectPath = projectSettingsText.getText();
+			projectPath = projectPathText.getText();
 			checkForPageCompletion();
 		}
 	}
 
+	/**
+	 * Selection Listener for the "In Workspace" Radio Button.
+	 *
+	 */
 	private class BtnInWorkspaceSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			isInFileSystem = false;
 
-			if (isCreateNewProject) {
+			if (isCreateNewApplication) {
 				setProjectNameEntering();
 			} else {
 				setProjectSelection();
@@ -551,6 +573,10 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * Selection Listener for the "In File System" Radio Button.
+	 *
+	 */
 	private class BtnInFileSystemSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
@@ -565,13 +591,17 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
-	private class BtnUpdateExistingProjectSelectionListener extends SelectionAdapter {
+	/**
+	 * Selection Listener for the "Update Existing Application" Radio Button.
+	 *
+	 */
+	private class BtnUpdateExistingApplicationSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			isCreateNewProject = false;
+			isCreateNewApplication = false;
 
 			setProjectSelection();
-			setEnableTemplateSelection(isCreateNewProject);
+			setEnableTemplateSelection(isCreateNewApplication);
 		}
 
 		@Override
@@ -580,16 +610,20 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
+	/**
+	 * Selection Listener for the "Create New Application" Radio Button.
+	 *
+	 */
 	private class BtnCreateANewSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			isCreateNewProject = true;
+			isCreateNewApplication = true;
 			if (!isInFileSystem) {
 				setProjectNameEntering();
 			} else {
 				setProjectSelection();
 			}
-			setEnableTemplateSelection(isCreateNewProject);
+			setEnableTemplateSelection(isCreateNewApplication);
 		}
 
 		@Override
@@ -598,12 +632,17 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
-	private class ProjectTemplateButtonSelectionListener extends SelectionAdapter {
+	/**
+	 * Selection Listener for the application template text.
+	 *
+	 */
+	private class ApplicationTemplateButtonSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			final FileDialog dialog = new FileDialog(getShell());
-			dialog.setFilterExtensions(new String[] { "*.zip", "*.*" });
-			dialog.setFilterNames(new String[] { "*Template Zip File", "All Files" });
+			dialog.setFilterExtensions(new String[] { "*.zip", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+			dialog.setFilterNames(new String[] { Messages.ModelPathsPage_TemplateZipFile,
+				Messages.ModelPathsPage_AllFiles });
 			final String path = dialog.open();
 			if (path != null) {
 				projectTemplateText.setText(path);
@@ -611,7 +650,11 @@ public class ModelPathsPage extends WizardPage {
 		}
 	}
 
-	private class ProjectTemplateTextModifyListener implements ModifyListener {
+	/**
+	 * TextModifyListener for the application template text.
+	 *
+	 */
+	private class ApplicationTemplateTextModifyListener implements ModifyListener {
 		@Override
 		public void modifyText(ModifyEvent e) {
 			templatePath = projectTemplateText.getText();
@@ -620,12 +663,12 @@ public class ModelPathsPage extends WizardPage {
 
 	private void setProjectSelection() {
 		selectProjectButton.setEnabled(true);
-		selectProjectLabel.setText("Select Project");
+		selectProjectLabel.setText(Messages.ModelPathsPage_SelectProject);
 	}
 
 	private void setProjectNameEntering() {
 		selectProjectButton.setEnabled(false);
-		selectProjectLabel.setText("Enter Project Name");
+		selectProjectLabel.setText(Messages.ModelPathsPage_EnterProjectName);
 	}
 
 	private void setEnableTemplateSelection(boolean enable) {
@@ -635,7 +678,7 @@ public class ModelPathsPage extends WizardPage {
 	}
 
 	private boolean isInvalidPath(String path) {
-		return path == null || path.trim().equals("");
+		return path == null || path.trim().equals(""); //$NON-NLS-1$
 	}
 
 }
