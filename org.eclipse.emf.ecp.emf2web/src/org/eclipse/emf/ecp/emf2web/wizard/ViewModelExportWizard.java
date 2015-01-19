@@ -41,7 +41,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecp.emf2web.export.Emf2QbExporter;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.EClassPage;
-import org.eclipse.emf.ecp.emf2web.wizard.pages.IOnEnterWizardPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ModelPathsPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ViewModelsPage;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -63,14 +62,8 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	private EClassPage eClassPage;
 	private ViewModelsPage viewModelPage;
 
-	private boolean createNewPlayApplication = false;
-
 	public IFile getEcoreModel() {
 		return ecoreModel;
-	}
-
-	public void setCreateNewPlayApplication(boolean create) {
-		createNewPlayApplication = create;
 	}
 
 	public void setEcoreModel(IFile ecoreModel) {
@@ -82,6 +75,15 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		}
 		this.ecoreModel = ecoreModel;
 
+		resolveReferences(ecoreModel);
+
+		if (eClassPage != null && viewModelPage != null) {
+			eClassPage.setNewResource(ecoreResource);
+			viewModelPage.clear();
+		}
+	}
+
+	private void resolveReferences(IFile ecoreModel) {
 		final URI fileURI = URI.createFileURI(ecoreModel.getLocation().toString());
 		ecoreResource = resourceSet.getResource(fileURI, true);
 
@@ -94,11 +96,6 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 				resourceSet.getPackageRegistry().put(ePackage.getNsURI(),
 					ePackage);
 			}
-		}
-
-		if (eClassPage != null && viewModelPage != null) {
-			eClassPage.setNewResource(ecoreResource);
-			viewModelPage.clear();
 		}
 	}
 
@@ -130,12 +127,17 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		addPage(viewModelPage);
 	}
 
+	/**
+	 * bla.
+	 *
+	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
+	 */
 	@Override
 	public boolean performFinish() {
 		File exportDirectory;
 		IProject project;
 
-		if (!modelsPage.getCreateNewProject()) {
+		if (!modelsPage.isCreateNewProject()) {
 			project = modelsPage.getSelectedProject();
 			exportDirectory = project.getLocation().toFile();
 
@@ -157,7 +159,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 			final Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
 			final URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
 
-			String name = modelsPage.getProjectName();
+			String name = modelsPage.getProjectPath();
 			if (name == null || name.trim().equals("")) {
 				name = "playapplication";
 			}
@@ -254,10 +256,16 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 
 	@Override
 	public IWizardPage getNextPage(IWizardPage page) {
-		final IWizardPage nextPage = super.getNextPage(page);
-		if (nextPage instanceof IOnEnterWizardPage) {
-			((IOnEnterWizardPage) nextPage).onEnterPage();
+		if (page == modelsPage) {
+			final IFile ecoreModelFile = modelsPage.getEcoreModelFile();
+			if (ecoreModelFile != null) {
+				setEcoreModel(ecoreModelFile);
+			}
+			if (ecoreResource != eClassPage.getEcoreResource()) {
+				eClassPage.setNewResource(ecoreResource);
+			}
 		}
+		final IWizardPage nextPage = super.getNextPage(page);
 		return nextPage;
 	}
 

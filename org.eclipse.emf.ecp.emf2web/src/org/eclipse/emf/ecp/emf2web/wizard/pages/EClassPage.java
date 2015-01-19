@@ -25,20 +25,24 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecp.emf2web.wizard.ViewModelExportWizard;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
-public class EClassPage extends WizardPage implements IOnEnterWizardPage {
+/**
+ * Page for selecting an EClass out of an Ecore model.
+ *
+ * @author Stefan Dirix
+ *
+ */
+public class EClassPage extends WizardPage {
 
 	private CheckboxTableViewer eClassTableViewer;
 	private Resource ecoreResource;
@@ -46,10 +50,17 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 	private final Set<EClass> selectedEClasses;
 
 	/**
+	 * @return the ecoreResource or {@code null} if not set.
+	 */
+	public Resource getEcoreResource() {
+		return ecoreResource;
+	}
+
+	/**
 	 * Create the wizard.
 	 */
 	public EClassPage() {
-		super("wizardPage");
+		super("EClass Selection");
 		setTitle("EClass Selection");
 		setDescription("Select at least one EClass to export");
 
@@ -71,7 +82,7 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		eClassTableViewer = CheckboxTableViewer.newCheckList(container,
 			SWT.BORDER | SWT.FULL_SELECTION);
 		eClassTableViewer
-		.addCheckStateListener(new EClassTableViewerICheckStateListener());
+			.addCheckStateListener(new EClassTableViewerICheckStateListener());
 		eClassTableViewer.setContentProvider(new ArrayContentProvider());
 
 		final ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
@@ -84,7 +95,18 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		setPageComplete(false);
 	}
 
+	/**
+	 * Indicate the page that the resource and therefore the model changed.
+	 *
+	 * @param ecoreResource
+	 *            The new resource containing an Ecore model.
+	 */
 	public void setNewResource(Resource ecoreResource) {
+		if (this.ecoreResource == ecoreResource) {
+			// Nothing changed -> Nothing to do
+			return;
+		}
+
 		this.ecoreResource = ecoreResource;
 		setPageComplete(false);
 
@@ -114,17 +136,14 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		eClassTableViewer.setInput(eClassList);
 	}
 
-	private ViewModelExportWizard getExportWizard() {
-		final IWizard wizard = getWizard();
-		if (wizard instanceof ViewModelExportWizard) {
-			return (ViewModelExportWizard) wizard;
-		} else {
-			return null;
-		}
-	}
-
+	/**
+	 * Listener for managing CheckStateEvents in {@link EClassPage}.
+	 *
+	 * @author Stefan Dirix
+	 *
+	 */
 	private class EClassTableViewerICheckStateListener implements
-	ICheckStateListener {
+		ICheckStateListener {
 		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (event.getChecked()) {
@@ -142,16 +161,14 @@ public class EClassPage extends WizardPage implements IOnEnterWizardPage {
 		}
 	}
 
+	/**
+	 * Returns the EClasses selected by the user.
+	 *
+	 * @return
+	 *         EClasses selected by the user.
+	 */
 	public Set<EClass> getSelectedEClasses() {
 		return selectedEClasses;
 	}
 
-	@Override
-	public void onEnterPage() {
-		if (ecoreResource == null) {
-			if (getExportWizard() != null) {
-				setNewResource(getExportWizard().getEcoreResource());
-			}
-		}
-	}
 }
