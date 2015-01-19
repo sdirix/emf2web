@@ -14,29 +14,43 @@ package org.eclipse.emf.ecp.emf2web.export
 
 import java.io.File
 import java.util.ArrayList
-import org.apache.commons.io.FileUtils
-import org.eclipse.emf.ecore.EPackage
-import org.eclipse.emf.ecore.EClass
-
-import org.eclipse.emf.ecore.EEnum
-import org.eclipse.emf.ecore.resource.Resource
-import java.util.Set
-import java.util.HashSet
-import org.eclipse.emf.ecp.view.spi.model.VView
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalLayout
-import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
-import org.eclipse.emf.ecp.view.spi.label.model.VLabel
-import org.eclipse.emf.ecp.view.spi.group.model.VGroup
-import org.eclipse.emf.ecp.view.spi.model.VControl
 import java.util.Comparator
-import org.eclipse.emf.ecore.util.EcoreUtil
+import java.util.HashSet
+import java.util.Set
+import org.apache.commons.io.FileUtils
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EEnum
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecp.view.spi.group.model.VGroup
+import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalLayout
+import org.eclipse.emf.ecp.view.spi.label.model.VLabel
+import org.eclipse.emf.ecp.view.spi.model.VControl
+import org.eclipse.emf.ecp.view.spi.model.VView
+import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
 
+/** 
+ * The class which handles the conversion from ecore files to qb files.
+ * 
+ * */
 class Emf2QbExporter {
 
 	var ClassMapping classMapper = null;
 	var NameHelper nameHelper = null;
 	
+	/**
+	 * The main method which handles the conversion and export of the ecore files.
+	 *
+	 * @param ecoreModel
+	 *            The {@link Resource} containing the ecore model.
+	 * @param selectedClasses
+	 *            Collection of classes which shall be converted to the qb format.
+	 * @param viewModels
+	 *            Collection of view models for the {@code selectedClasses} which shall not use the default layout.
+	 * @param destinationDir
+	 *            The directory where the converted files shall be saved.
+	 * */
 	def public void export(Resource ecoreModel, Set<EClass> selectedClasses, Set<Resource> viewModels, File destinationDir){
 		classMapper = new ClassMapping()
 		nameHelper = new NameHelper()
@@ -83,6 +97,14 @@ class Emf2QbExporter {
 		
 	}
 	
+	/**
+	 * Returns the file for the qb application which defines the routes used in the web.
+	 *
+	 * @param selectedClasses
+	 *            Collection of {@link EClass}es for which a route has to be defined.
+	 * 
+	 * @return the routes file which contains the routes for the given {@link EClass}es.
+	 * */
 	def private String buildRoutesFile(Set<EClass> selectedClasses){
 		val classes = new ArrayList<EClass>(selectedClasses)
 		classes.sort(new Comparator<EClass>(){	
@@ -106,6 +128,11 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/** 
+	 * The static head of the routes file. 
+	 * 
+	 * @return The static part of the routes file.
+	 * */
 	def private String routesIntro(){
 		'''
 		# Routes
@@ -121,6 +148,9 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/** 
+	 *  Generates the Scala file which links between the routes and the generated qb schema and view model files.
+	 * */
 	def private String buildControllerFile(EClass eClass){
 		val name = eClass.name
 		'''
@@ -155,6 +185,9 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/** 
+	 * The static head of the Scala QB controller file.
+	 * */
 	def private String controllerIntro(){
 		'''
 		package controllers
@@ -170,6 +203,9 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/**
+	 * Generates the QB schema file for the given {@link EClass} and view models.
+	 */
 	def private String buildSchemaFile(EClass eClass, Set<Resource> viewModels){
 		'''
 		«scalaIntro»
@@ -183,6 +219,9 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/**
+	 * Generates the QB view model object for the {@link EClass} and EMF Forms view models.
+	 */
 	def private String buildViewModelObject(EClass eClass, Set<Resource> viewModels){
 		val viewModel = findViewModel(eClass, viewModels)
 		if(viewModel == null){
@@ -197,6 +236,9 @@ class Emf2QbExporter {
 		}
 	}
 	
+	/** 
+	 * Generates the QB view model for the {@link EClass} and EMF Forms view model.
+	 * */
 	def private String buildViewModel(EClass eClass, EObject viewModelElement) {
 		switch viewModelElement {
 			VView:
@@ -241,6 +283,10 @@ class Emf2QbExporter {
 		}
 	}
 	
+	/**
+	 * Selects the corresponding view model for the given {@link EClass} from a collection of view models.
+	 * 
+	 */
 	def private Resource findViewModel(EClass eClass, Set<Resource> viewModels){
 		viewModels.findFirst[viewResource |
 			val root = viewResource.contents.get(0)
@@ -251,6 +297,9 @@ class Emf2QbExporter {
 		]
 	} 
 	
+	/** 
+	 * The static part of the Scala schema file.
+	 * */
 	def private String scalaIntro(){
 		'''
 		package controllers
@@ -261,6 +310,10 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/**
+	 * Generates the QB schema object for the given {@link EClass}.
+	 * 
+	 */	
 	def private String buildModelObject(EClass eClass){
 		val requiredFeatures = eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound > 0];
 		val optionalFeatures = eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound == 0];
@@ -278,6 +331,10 @@ class Emf2QbExporter {
 		'''
 	}
 	
+	/** 
+	 * Generates the default QB view model for the given {@link EClass}.
+	 * 
+	 * */
 	def private String buildDefaultViewModel(EClass eClass){
 		'''
 		val viewSchema = QBViewModel(	
