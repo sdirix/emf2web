@@ -13,14 +13,18 @@
 package org.eclipse.emf.ecp.emf2web.wizard;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -28,9 +32,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -43,15 +45,20 @@ import org.eclipse.emf.ecp.emf2web.export.Emf2QbExporter;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.EClassPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ModelPathsPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ViewModelsPage;
+import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.osgi.framework.Bundle;
 
-public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
+/**
+ * Wizard for converting an Ecore model file into a format for the qb Play Application. It supports optional view model
+ * files and can create the qb Play Application via a template file.
+ *
+ */
+public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, IPageChangingListener {
 
 	private IFile ecoreModel;
 	private IFile genModel;
@@ -62,10 +69,13 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	private EClassPage eClassPage;
 	private ViewModelsPage viewModelPage;
 
-	public IFile getEcoreModel() {
-		return ecoreModel;
-	}
-
+	/**
+	 * Sets the Ecore model file for the wizard and its pages. Can be used before the wizard is actually opened to
+	 * display the given model as default option.
+	 *
+	 * @param ecoreModel
+	 *            the {@link IFile} containing the Ecore model.
+	 */
 	public void setEcoreModel(IFile ecoreModel) {
 		if (this.ecoreModel != null) {
 			if (this.ecoreModel.getLocation().toString()
@@ -83,6 +93,12 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		}
 	}
 
+	/**
+	 * Resolves References for the given Ecore Model. This is needed to properly access the ViewModel.
+	 *
+	 * @param ecoreModel
+	 *            the model for which the references shall be resolved.
+	 */
 	private void resolveReferences(IFile ecoreModel) {
 		final URI fileURI = URI.createFileURI(ecoreModel.getLocation().toString());
 		ecoreResource = resourceSet.getResource(fileURI, true);
@@ -99,18 +115,30 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		}
 	}
 
+	/**
+	 * Returns the .genmodel file if the user entered one.
+	 *
+	 * @return
+	 *         the {@link IFile} containing the .genmodel or {@code null} if the user did not select one.
+	 */
 	public IFile getGenModel() {
 		return genModel;
 	}
 
+	/**
+	 * Sets the .genmodel file for the wizard and its pages. Can be used before the wizard is actually opened to
+	 * display the given model as default option.
+	 *
+	 * @param genModel
+	 *            the {@link IFile} containing the genmodel.
+	 */
 	public void setGenModel(IFile genModel) {
 		this.genModel = genModel;
 	}
 
-	public Resource getEcoreResource() {
-		return ecoreResource;
-	}
-
+	/**
+	 * Default constructor.
+	 */
 	public ViewModelExportWizard() {
 		setWindowTitle("Export View Model to Web");
 		resourceSet = new ResourceSetImpl();
@@ -128,80 +156,50 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 	}
 
 	/**
-	 * bla.
+	 * Creates or updates a qb Play Application within the workspace or file system.
 	 *
 	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
 	 */
 	@Override
 	public boolean performFinish() {
-		File exportDirectory;
-		IProject project;
+		final File exportDirectory;
+		IProject project = null;
 
-		if (!modelsPage.isCreateNewProject()) {
-			project = modelsPage.getSelectedProject();
-			exportDirectory = project.getLocation().toFile();
+		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final File workspaceDirectory = workspace.getRoot().getLocation().toFile();
 
-			// check if valid
-			if (!exportDirectory.isDirectory()) {
-				MessageDialog.openError(getShell(), "Play Application Path Error",
-					"The chosen play application directory is not a directory!");
-				return false;
+		if (modelsPage.isCreateNewApplication()) {
+			// determine destination
+			final String newProjectName = modelsPage.getProjectPath();
+			if (modelsPage.isInWorkspace()) {
+				exportDirectory = new File(workspaceDirectory, newProjectName);
+			} else {
+				exportDirectory = new File(modelsPage.getProjectPath());
 			}
 
-			if (!exportDirectory.exists()) {
-				if (!exportDirectory.mkdirs()) {
-					MessageDialog.openError(getShell(), "Play Application Path Error",
-						"The chosen path for the play application could not be generated!");
-					return false;
+			final String templatePath = modelsPage.getTemplatePath();
+			if (templatePath != null && !templatePath.trim().equals("")) { //$NON-NLS-1$
+				try {
+					extractZip(templatePath, exportDirectory.getAbsolutePath());
+					project = importProject(exportDirectory, newProjectName);
+				} catch (final IOException ex) {
+					MessageDialog.openError(getShell(), "IO Error", ex.getMessage());
+				} catch (final CoreException ex) {
+					MessageDialog.openError(getShell(), "Core Error", ex.getMessage());
 				}
 			}
+
 		} else {
-			final Bundle bundle = Platform.getBundle("org.eclipse.emf.ecp.emf2web.examples");
-			final URL fileURL = bundle.getEntry("projects/org.eclipse.emf.ecp.emf2web.playapplication");
-
-			String name = modelsPage.getProjectPath();
-			if (name == null || name.trim().equals("")) {
-				name = "playapplication";
-			}
-
-			File source = null;
-			try {
-				final URL resolvedURL = FileLocator.resolve(fileURL);
-
-				// eclipse bug #145096
-				String resolvedString = resolvedURL.getFile();
-				resolvedString = "file:" + resolvedString.replaceAll(" ", "%20");
-				final URL escapedURL = new URL(resolvedString);
-
-				source = new File(escapedURL.toURI());
-
-				final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				final File workspaceDirectory = workspace.getRoot().getLocation().toFile();
-
-				final File destination = new File(workspaceDirectory, name);
-				destination.mkdir();
-
-				exportDirectory = destination;
-
-				FileUtils.copyDirectory(source, destination);
-
-				// register project in eclipse
-				project = importProject(destination, name);
-
-			} catch (final URISyntaxException e) {
-				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
-				e.printStackTrace();
-				return false;
-			} catch (final IOException e) {
-				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
-				e.printStackTrace();
-				return false;
-			} catch (final CoreException e) {
-				MessageDialog.openError(getShell(), "Play Application Generation Error", e.getMessage());
-				e.printStackTrace();
-				return false;
+			// Update
+			if (modelsPage.isInWorkspace()) {
+				project = modelsPage.getSelectedProject();
+				exportDirectory = project.getLocation().toFile();
+			} else {
+				exportDirectory = new File(modelsPage.getProjectPath());
 			}
 		}
+
+		// Update Application
 
 		final Set<EClass> eClasses = eClassPage.getSelectedEClasses();
 		final Set<Resource> viewModels = new HashSet<Resource>();
@@ -217,19 +215,61 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 		final Emf2QbExporter exporter = new Emf2QbExporter();
 		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
 
-		try {
-			project.refreshLocal(IResource.DEPTH_INFINITE, null);
-		} catch (final CoreException e) {
-			MessageDialog.openError(getShell(), "Refresh Error", e.getMessage());
-			e.printStackTrace();
+		if (project != null) {
+			try {
+				project.refreshLocal(IResource.DEPTH_INFINITE, null);
+			} catch (final CoreException e) {
+				MessageDialog.openError(getShell(), "Refresh Error", e.getMessage());
+				e.printStackTrace();
+			}
 		}
 
 		return true;
 	}
 
-	private IProject importProject(final File baseDirectory, final String projectName) throws CoreException {
+	/**
+	 * Extracts the given zip file to the given destination.
+	 *
+	 * @param zipFilePath
+	 *            The absolute path of the zip file.
+	 * @param destinationPath
+	 *            The absolute path of the destination directory;
+	 * @throws IOException when extracting or copying fails.
+	 */
+	private void extractZip(String zipFilePath, String destinationPath) throws IOException {
+		final ZipFile zipFile = new ZipFile(zipFilePath);
+		final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+		while (entries.hasMoreElements()) {
+			final ZipEntry entry = entries.nextElement();
+			final File entryDestination = new File(destinationPath, entry.getName());
+			entryDestination.getParentFile().mkdirs();
+			if (entry.isDirectory()) {
+				entryDestination.mkdirs();
+			} else {
+				final InputStream in = zipFile.getInputStream(entry);
+				final OutputStream out = new FileOutputStream(entryDestination);
+				IOUtils.copy(in, out);
+				IOUtils.closeQuietly(in);
+				IOUtils.closeQuietly(out);
+			}
+		}
+		zipFile.close();
+	}
+
+	/**
+	 * Imports the given project into the workspace with the specified name.
+	 *
+	 * @param projectDirectory
+	 *            The directory containing the project and the ".project" file.
+	 * @param projectName
+	 *            The name for the new project.
+	 * @return
+	 *         The imported project.
+	 * @throws CoreException
+	 */
+	private IProject importProject(final File projectDirectory, final String projectName) throws CoreException {
 		final IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
-			new Path(baseDirectory.getAbsolutePath() + "/.project"));
+			new Path(new File(projectDirectory, ".project").getAbsolutePath())); //$NON-NLS-1$
 		description.setName(projectName);
 		final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		project.create(description, null);
@@ -244,19 +284,24 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 			final Object selectedObject = it.next();
 			if (selectedObject instanceof IFile) {
 				final IFile file = (IFile) selectedObject;
-				if (file.getLocation().getFileExtension().equals("ecore")) {
+				if (file.getLocation().getFileExtension().equals("ecore")) { //$NON-NLS-1$
 					setEcoreModel(file);
 				} else if (file.getLocation().getFileExtension()
-					.equals("genmodel")) {
+					.equals("genmodel")) { //$NON-NLS-1$
 					genModel = file;
 				}
 			}
 		}
 	}
 
+	/**
+	 * Transfers information from the {@link ModelPathsPage} to the {@link EClassPage} when changing the page.
+	 *
+	 * @see org.eclipse.jface.dialogs.IPageChangingListener#handlePageChanging(org.eclipse.jface.dialogs.PageChangingEvent)
+	 */
 	@Override
-	public IWizardPage getNextPage(IWizardPage page) {
-		if (page == modelsPage) {
+	public void handlePageChanging(PageChangingEvent event) {
+		if (event.getCurrentPage() == modelsPage) {
 			final IFile ecoreModelFile = modelsPage.getEcoreModelFile();
 			if (ecoreModelFile != null) {
 				setEcoreModel(ecoreModelFile);
@@ -265,8 +310,6 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard {
 				eClassPage.setNewResource(ecoreResource);
 			}
 		}
-		final IWizardPage nextPage = super.getNextPage(page);
-		return nextPage;
 	}
 
 }

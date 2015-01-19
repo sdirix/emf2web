@@ -111,7 +111,7 @@ public class ModelPathsPage extends WizardPage {
 	 *
 	 * @return {@code true} if the user wants to create a new project, {@code false} otherwise.
 	 */
-	public boolean isCreateNewProject() {
+	public boolean isCreateNewApplication() {
 		return isCreateNewProject;
 	}
 
@@ -304,7 +304,6 @@ public class ModelPathsPage extends WizardPage {
 		new Label(grpProjectSettings, SWT.NONE);
 
 		projectTemplateComposite = new Composite(grpProjectSettings, SWT.NONE);
-		projectTemplateComposite.setEnabled(false);
 		projectTemplateComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		projectTemplateComposite.setLayout(new GridLayout(2, false));
 
@@ -315,6 +314,7 @@ public class ModelPathsPage extends WizardPage {
 		new Label(projectTemplateComposite, SWT.NONE);
 
 		projectTemplateText = new Text(projectTemplateComposite, SWT.BORDER);
+		projectTemplateText.addModifyListener(new ProjectTemplateTextModifyListener());
 		projectTemplateText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		projectTemplateButton = new Button(projectTemplateComposite, SWT.NONE);
@@ -608,6 +608,13 @@ public class ModelPathsPage extends WizardPage {
 			if (path != null) {
 				projectTemplateText.setText(path);
 			}
+		}
+	}
+
+	private class ProjectTemplateTextModifyListener implements ModifyListener {
+		@Override
+		public void modifyText(ModifyEvent e) {
+			templatePath = projectTemplateText.getText();
 		}
 	}
 

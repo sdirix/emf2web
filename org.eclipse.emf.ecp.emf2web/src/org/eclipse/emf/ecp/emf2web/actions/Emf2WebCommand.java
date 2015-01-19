@@ -47,6 +47,8 @@ public class Emf2WebCommand extends AbstractHandler {
 
 		final WizardDialog dialog = new WizardDialog(
 			HandlerUtil.getActiveShell(event), wizard);
+		dialog.addPageChangingListener(wizard);
+
 		dialog.open();
 
 		return null;
