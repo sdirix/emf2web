@@ -1,6 +1,6 @@
 <div class="inputform rounded">
 
-    <collection collection="elements" bindings="bindings"></collection>
+    <recelement ng-repeat="child in elements" element="child" bindings="bindings" top-open-date="openDate" top-validate-number="validateNumber" top-validate-integer="validateInteger"></recelement>
 
     <div class="row">
         <button type="button" class="btn btn-primary top-buffer right-buffer-l pull-right bottom-buffer-s" ng-click="sendData()">Submit</button>

@@ -5,6 +5,7 @@ angular.module('myApp', [
     'ui.bootstrap',
     'ui.validate',
     'myApp.filters',
+    'myApp.utilityServices',
     'myApp.dataServices',
     'myApp.directives',
     'myApp.controllers'

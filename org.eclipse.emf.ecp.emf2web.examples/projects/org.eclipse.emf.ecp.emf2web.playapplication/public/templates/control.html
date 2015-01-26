@@ -1,13 +1,13 @@
-<div ng-switch on="control.type" class="form-group top-buffer" ng-class="control.wholesize">
+<div ng-switch on="control.type" class="form-group top-buffer">
 
     <label for="control.name" ng-class="control.labelclass">{{control.displayname}}</label>
 
     <div ng-class="control.inputclass">
         <input ng-switch-when="string" type="text" ng-model="bindings[control.name]" id="control.name" class="form-control" name="control.displayname" />
 
-        <input ng-switch-when="number" type="text" ng-model="bindings[control.name]" ui-validate=" 'validateNumber($value, control)' " id="control.name" class="form-control" name="control.displayname" />
+        <input ng-switch-when="number" type="text" ng-model="bindings[control.name]" ui-validate="'topValidateNumber($value, control)'" id="control.name" class="form-control" name="control.displayname" />
 
-        <input ng-switch-when="integer" type="text" ng-model="bindings[control.name]" ui-validate=" 'validateInteger($value, control)' " id="control.name" class="form-control" name="control.displayname" />
+        <input ng-switch-when="integer" type="text" ng-model="bindings[control.name]" ui-validate="'topValidateInteger($value, control)'" id="control.name" class="form-control" name="control.displayname" />
 
         <div ng-switch-when="boolean" class="checkbox-inline" for="control.value">
             <input type="checkbox" ng-model="bindings[control.name]" name="control.displayname" id="control.name" />&nbsp;
@@ -16,7 +16,7 @@
         <div ng-switch-when="date-time" class="input-group">
             <input type="text" datepicker-popup="dd.MM.yyyy" ng-model="bindings[control.name]" close-text="Close" is-open="control.isOpen" id="control.name" class="form-control" name="control.displayname" />
             <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="openDate($event,control)"><i class="glyphicon glyphicon-calendar"></i>
+                <button type="button" class="btn btn-default" ng-click="topOpenDate($event,control)"><i class="glyphicon glyphicon-calendar"></i>
                 </button>
             </span>
         </div>
