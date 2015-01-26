@@ -181,7 +181,9 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 			if (templatePath != null && !templatePath.trim().equals("")) { //$NON-NLS-1$
 				try {
 					extractZip(templatePath, exportDirectory.getAbsolutePath());
-					project = importProject(exportDirectory, newProjectName);
+					if (modelsPage.isInWorkspace()) {
+						project = importProject(exportDirectory, newProjectName);
+					}
 				} catch (final IOException ex) {
 					MessageDialog.openError(getShell(), "IO Error", ex.getMessage());
 				} catch (final CoreException ex) {
