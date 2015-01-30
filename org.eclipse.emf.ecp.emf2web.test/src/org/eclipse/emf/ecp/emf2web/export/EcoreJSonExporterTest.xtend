@@ -1,8 +1,13 @@
 package org.eclipse.emf.ecp.emf2web.export
 
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.List
 import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.emf.ecore.EStructuralFeature.Setting
+import org.eclipse.emf.ecore.EcoreFactory
 import org.eclipse.emf.ecore.EcorePackage
 import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalFactory
 import org.eclipse.emf.ecp.view.spi.model.VViewFactory
@@ -11,16 +16,17 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-import org.eclipse.emf.ecore.EcoreFactory
-import java.util.List
-import java.util.ArrayList
-import java.util.Arrays
 
 class EcoreJSonExporterTest {
+	static final val ecorePackage = EcorePackage.eINSTANCE
+	static final val ecoreFactory = EcoreFactory.eINSTANCE
+	static final val testName = "testName";
+	static final val testType = "testType";
+	
+	final val List<String> testEnumValues = new ArrayList<String>(Arrays.asList("1A", "2B"))
+	
 	private EcoreJSonExporter exporter;
-	val testName = "testName";
-	val testType = "testType";
-	val List<String> testEnumValues = new ArrayList<String>(Arrays.asList("1A", "2B"))
+	
 
 	@Before
 	def void init() {
@@ -29,7 +35,7 @@ class EcoreJSonExporterTest {
 
 	@Test
 	def testBuildEClass() {
-		val result = exporter.buildEClass(EcoreFactory.eINSTANCE.createEClass);
+		val result = exporter.buildEClass(ecoreFactory.createEClass);
 		assertEquals(emptyEClass, result);
 	}
 
@@ -69,25 +75,25 @@ class EcoreJSonExporterTest {
 
 	@Test
 	def void testBuildEAttributeInEClass() {
-		val eClass = EcoreFactory.eINSTANCE.createEClass;
-		val eAttribute = EcoreFactory.eINSTANCE.createEAttribute
+		val eClass = ecoreFactory.createEClass;
+		val eAttribute = ecoreFactory.createEAttribute
 		eAttribute.name = testName
-		eAttribute.EType = EcorePackage.eINSTANCE.EString
+		eAttribute.EType = ecorePackage.EString
 		eClass.EAttributes.add(eAttribute)
 		val result = exporter.buildEClass(eClass)
 		assertEquals(testEAttributeInEClass, result);
 	}
-
+	
 	@Test
 	def void testBuild2EAttributeInEClass() {
-		val eClass = EcoreFactory.eINSTANCE.createEClass;
-		val eAttribute = EcoreFactory.eINSTANCE.createEAttribute
+		val eClass = ecoreFactory.createEClass;
+		val eAttribute = ecoreFactory.createEAttribute
 		eAttribute.name = testName
-		eAttribute.EType = EcorePackage.eINSTANCE.EString
+		eAttribute.EType = ecorePackage.EString
 		eClass.EAttributes.add(eAttribute)
-		val eAttribute2 = EcoreFactory.eINSTANCE.createEAttribute
+		val eAttribute2 = ecoreFactory.createEAttribute
 		eAttribute2.name = testName
-		eAttribute2.EType = EcorePackage.eINSTANCE.EString
+		eAttribute2.EType = ecorePackage.EString
 		eClass.EAttributes.add(eAttribute2)
 
 		val result = exporter.buildEClass(eClass)
@@ -115,13 +121,23 @@ class EcoreJSonExporterTest {
 	
 	@Test
 	def void testBuildDateEAttributeInEClass() {
-		val eClass = EcoreFactory.eINSTANCE.createEClass;
-		val eAttribute = EcoreFactory.eINSTANCE.createEAttribute
-		eAttribute.name = testName
-		eAttribute.EType = EcorePackage.eINSTANCE.EDate
+		val eClass = ecoreFactory.createEClass;
+		val eAttribute = eAttributeWithTestName(ecorePackage.EDate)
 		eClass.EAttributes.add(eAttribute)
 		val result = exporter.buildEClass(eClass)
 		assertEquals(testDateEAttributeInEClass, result);
+	}
+	
+	def eAttributeWithTestName() {
+		val eAttribute = ecoreFactory.createEAttribute
+		eAttribute.name = testName
+		eAttribute
+	}
+	
+	def eAttributeWithTestName(EDataType type) {
+		val eAttribute = eAttributeWithTestName()
+		eAttribute.EType = type
+		eAttribute
 	}
 	
 	def String testDateEAttributeInEClass() '''
@@ -138,7 +154,7 @@ class EcoreJSonExporterTest {
 
 	@Test
 	def void testGetQBType() {
-		val result = exporter.getQBType("EString")
+		val result = exporter.asQBType("EString")
 		assertEquals(result, "string")
 	}
 	
@@ -154,5 +170,23 @@ class EcoreJSonExporterTest {
 		  "format": "date-time"
 		}
 	'''
+	
+	@Test
+	def testBuildEnumAsEAttributeType() {
+		val attributeWithEnumType = eAttributeWithTestName(buildEnum)
+		val result = exporter.buildEAttribute(attributeWithEnumType)
+		assertEquals(testEnum, result);
+	}
+	
+	def buildEnum() {
+		val eEnum = ecoreFactory.createEEnum
+		eEnum.name = testName
+		for (String literal : testEnumValues) {
+			val enumLiteral = ecoreFactory.createEEnumLiteral
+			enumLiteral.name = literal
+			eEnum.ELiterals.add(enumLiteral)
+		}
+		eEnum
+	}
 
 }

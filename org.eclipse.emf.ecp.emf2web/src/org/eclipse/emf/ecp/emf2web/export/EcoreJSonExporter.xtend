@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.EClassifier
 import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EAttribute
 import org.eclipse.emf.ecore.EcorePackage
+import org.eclipse.emf.ecore.EEnum
 
 /** 
  * The class which handles the conversion from ecore files to qbForm files.
@@ -69,12 +70,14 @@ class EcoreJSonExporter {
 	def String buildEAttribute(EAttribute eAttribute) {
 		if (eAttribute.EAttributeType.equals(EcorePackage.eINSTANCE.EDate)) {
 			return buildDateEAttribute(eAttribute.name)
+		} else if (eAttribute.EAttributeType instanceof EEnum) {
+			return buildEnumEAttribute(eAttribute.name, eAttribute.EAttributeType as EEnum)
 		}
-		return buildEAttribute(eAttribute.name, getQBType(eAttribute.getEAttributeType().name))
+		return buildEAttribute(eAttribute.name, eAttribute.getEAttributeType.asQBType)
 	}
 
-	def String getQBType(String name) {
-		name.toLowerCase.substring(1)
+	def buildEnumEAttribute(String name, EEnum eEnum) {
+		buildEnum(name, eEnum.ELiterals.map[literal|literal.name])
 	}
 
 	def String buildEAttribute(String name, String type) '''
@@ -84,12 +87,16 @@ class EcoreJSonExporter {
 	def String buildEnum(String name, List<String> enumValues) '''
 		"«name»": {
 		  "type": "string",
-		  "enum": [
-		    «FOR value : enumValues SEPARATOR ','»
-		    	"«value»"
-		    «ENDFOR»
-		  ]
+		  «buildEnum(enumValues)»
 		}
+	'''
+
+	def String buildEnum(List<String> enumValues) '''
+		"enum": [
+		  «FOR value : enumValues SEPARATOR ','»
+		  	"«value»"
+		  «ENDFOR»
+		]
 	'''
 
 	def String buildDateEAttribute(String name) '''
@@ -98,5 +105,13 @@ class EcoreJSonExporter {
 		  "format": "date-time"
 		}
 	'''
+
+	def asQBType(EDataType dataType) {
+		dataType.name.toLowerCase.substring(1)
+	}
+
+	def asQBType(String name) {
+		name.toLowerCase.substring(1)
+	}
 
 }
