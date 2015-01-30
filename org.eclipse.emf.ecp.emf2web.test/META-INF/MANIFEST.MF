@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: org.eclipse.emf.ecp.emf2web.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse Modeling Project
+Fragment-Host: org.eclipse.emf.ecp.emf2web;bundle-version="[0.1.0,1.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit
