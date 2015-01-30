@@ -48,65 +48,55 @@ class EcoreJSonExporter {
 	 * @param destinationDir
 	 *            The directory where the converted files shall be saved.
 	 * */
-
 	def public void exportEcoreModel(EClass eClass, File destinationDir) {
 		val controllerDest = "public/" + eClass.name + ".json"
-		//val viewModel = buildEcoreModel(view)
-//		FileUtils.writeStringToFile(new File(destinationDir, controllerDest), viewModel);
+
+	// val viewModel = buildEcoreModel(view)
+	// FileUtils.writeStringToFile(new File(destinationDir, controllerDest), viewModel);
 	}
 
-	def String buildEClass(EClass eClass) {
-		'''
-			{
-			  "type": "object",
-			  "properties": {
-			«FOR eAttribute : eClass.EAllAttributes SEPARATOR ','»
-			  «'    '+buildEAttribute(eAttribute)»
-			«ENDFOR»
-			  }
-			}
-		'''
-	}
-	
-	def String buildEAttribute(EAttribute eAttribute){
-		if(eAttribute.EAttributeType.equals(EcorePackage.eINSTANCE.EDate)){
+	def String buildEClass(EClass eClass) '''
+		{
+		  "type": "object",
+		  "properties": {
+		    «FOR eAttribute : eClass.EAllAttributes SEPARATOR ','»
+		    	«buildEAttribute(eAttribute)»
+		    «ENDFOR»
+		  }
+		}
+	'''
+
+	def String buildEAttribute(EAttribute eAttribute) {
+		if (eAttribute.EAttributeType.equals(EcorePackage.eINSTANCE.EDate)) {
 			return buildDateEAttribute(eAttribute.name)
 		}
 		return buildEAttribute(eAttribute.name, getQBType(eAttribute.getEAttributeType().name))
 	}
 
 	def String getQBType(String name) {
-		var ret = name.toLowerCase
-		ret = ret.substring(1)
-		ret
+		name.toLowerCase.substring(1)
 	}
 
-	def String buildEAttribute(String name, String type) {
-		'''
-			"«name»": {"type": "«type»"}
-		'''
-	}
+	def String buildEAttribute(String name, String type) '''
+		"«name»": {"type": "«type»"}
+	'''
 
-	def String buildEnum(String name, List<String> enumValues) {
-		'''
-			"«name»": {
-			  "type": "string",
-			  "enum": [
-			«FOR value : enumValues SEPARATOR ','»
-				«'    "' + value»"
-			«ENDFOR»
-			  ]
-			}
-		'''
-	}
-	
-	def String buildDateEAttribute(String name) {
-		'''
+	def String buildEnum(String name, List<String> enumValues) '''
+		"«name»": {
+		  "type": "string",
+		  "enum": [
+		    «FOR value : enumValues SEPARATOR ','»
+		    	"«value»"
+		    «ENDFOR»
+		  ]
+		}
+	'''
+
+	def String buildDateEAttribute(String name) '''
 		"«name»": {
 		  "type": "string",
 		  "format": "date-time"
 		}
-		'''
-	}
+	'''
 
 }

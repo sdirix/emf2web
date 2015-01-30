@@ -25,25 +25,21 @@ class EcoreJSonExporterTest {
 	@Before
 	def void init() {
 		exporter = new EcoreJSonExporter()
-
 	}
 
 	@Test
 	def testBuildEClass() {
-
 		val result = exporter.buildEClass(EcoreFactory.eINSTANCE.createEClass);
 		assertEquals(emptyEClass, result);
 	}
 
-	def String emptyEClass() {
-		'''
-			{
-			  "type": "object",
-			  "properties": {
-			  }
-			}
-		'''
-	}
+	def String emptyEClass() '''
+		{
+		  "type": "object",
+		  "properties": {
+		  }
+		}
+	'''
 
 	@Test
 	def testBuildEAttribute() {
@@ -51,11 +47,9 @@ class EcoreJSonExporterTest {
 		assertEquals(testEAttribute, result);
 	}
 
-	def String testEAttribute() {
-		'''
-			"«testName»": {"type": "«testType»"}
-		'''
-	}
+	def String testEAttribute() '''
+		"«testName»": {"type": "«testType»"}
+	'''
 
 	@Test
 	def testBuildEnum() {
@@ -63,17 +57,15 @@ class EcoreJSonExporterTest {
 		assertEquals(testEnum, result);
 	}
 
-	def String testEnum() {
-		'''
-			"«testName»": {
-			  "type": "string",
-			  "enum": [
-			    "«testEnumValues.get(0)»",
-			    "«testEnumValues.get(1)»"
-			  ]
-			}
-		'''
-	}
+	def String testEnum() '''
+		"«testName»": {
+		  "type": "string",
+		  "enum": [
+		    "«testEnumValues.get(0)»",
+		    "«testEnumValues.get(1)»"
+		  ]
+		}
+	'''
 
 	@Test
 	def void testBuildEAttributeInEClass() {
@@ -102,8 +94,7 @@ class EcoreJSonExporterTest {
 		assertEquals(test2EAttributeInEClass, result);
 	}
 
-	def String test2EAttributeInEClass() {
-		'''
+	def String test2EAttributeInEClass() '''
 			{
 			  "type": "object",
 			  "properties": {
@@ -111,19 +102,16 @@ class EcoreJSonExporterTest {
 			    "«testName»": {"type": "string"}
 			  }
 			}
-		'''
-	}
+	'''
 
-	def String testEAttributeInEClass() {
-		'''
-			{
-			  "type": "object",
-			  "properties": {
-			    "«testName»": {"type": "string"}
-			  }
-			}
-		'''
-	}
+	def String testEAttributeInEClass() '''
+		{
+		  "type": "object",
+		  "properties": {
+		    "«testName»": {"type": "string"}
+		  }
+		}
+	'''
 	
 	@Test
 	def void testBuildDateEAttributeInEClass() {
@@ -136,19 +124,17 @@ class EcoreJSonExporterTest {
 		assertEquals(testDateEAttributeInEClass, result);
 	}
 	
-	def String testDateEAttributeInEClass() {
-		'''
-			{
-			  "type": "object",
-			  "properties": {
-			    "«testName»": {
-			      "type": "string",
-			      "format": "date-time"
-			    }
-			  }
-			}
-		'''
-	}
+	def String testDateEAttributeInEClass() '''
+		{
+		  "type": "object",
+		  "properties": {
+		    "«testName»": {
+		      "type": "string",
+		      "format": "date-time"
+		    }
+		  }
+		}
+	'''
 
 	@Test
 	def void testGetQBType() {
@@ -162,13 +148,11 @@ class EcoreJSonExporterTest {
 		assertEquals(testDateEAttribute, result);
 	}
 	
-	def String testDateEAttribute() {
-		'''
+	def String testDateEAttribute() '''
 		"«testName»": {
 		  "type": "string",
 		  "format": "date-time"
 		}
-		'''
-	}
+	'''
 
 }
