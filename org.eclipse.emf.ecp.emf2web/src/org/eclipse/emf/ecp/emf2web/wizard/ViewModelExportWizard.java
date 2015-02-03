@@ -42,9 +42,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecp.emf2web.export.Emf2QbExporter;
+import org.eclipse.emf.ecp.emf2web.export.ExportHelper;
+import org.eclipse.emf.ecp.emf2web.export.ProjectType;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.EClassPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ModelPathsPage;
 import org.eclipse.emf.ecp.emf2web.wizard.pages.ViewModelsPage;
+import org.eclipse.emf.ecp.view.spi.model.VView;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PageChangingEvent;
@@ -213,10 +216,25 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 		}
 
 		EcoreUtil.resolveAll(resourceSet);
+		
+		ProjectType projectType = ExportHelper.checkProjectType();
+		//TODO: Check for validity (e.g. .project file and target directories)
+		
+		switch (projectType) {
+		case PLAY:
+			updatePlayApplication(ecoreResource, eClasses, viewModels, exportDirectory);			
+			break;
+			
+		case STANDALONE:
+			Set<VView> views = new HashSet<>();
+			for (Resource resource : viewModels) {
+				views.add((VView) resource.getContents().get(0));
+			}
+			ExportHelper.updateStandAloneProject(exportDirectory, eClasses, views);
 
-		final Emf2QbExporter exporter = new Emf2QbExporter();
-		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
-
+		default:
+			break;
+		}
 		if (project != null) {
 			try {
 				project.refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -228,6 +246,17 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 
 		return true;
 	}
+	
+	private void updatePlayApplication(Resource ecoreResource2,
+			Set<EClass> eClasses, Set<Resource> viewModels, File exportDirectory) {
+		final Emf2QbExporter exporter = new Emf2QbExporter();
+		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
+		
+	}
+
+	
+
+	
 
 	/**
 	 * Extracts the given zip file to the given destination.
