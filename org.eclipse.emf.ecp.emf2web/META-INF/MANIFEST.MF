@@ -33,4 +33,6 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: com.google.gson;version="2.2.4",
+ com.google.gson.reflect;version="2.2.4"
 
