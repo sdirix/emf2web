@@ -8,7 +8,7 @@
  * 
  * Contributors:
  * Stefan Dirix - initial API and implementation
- * Philip Langer - add support for enums and references 
+ * Philip Langer - re-implementation based on Gson 
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.export
 
@@ -74,6 +74,29 @@ class EcoreJSonExporter {
 				createJsonSchemaElement(feature)
 			]);
 	}
+	
+	
+	/**
+	 * The main method which handles the conversion and export of the ecore files.
+	 *
+	 * @param ecoreModel
+	 *            The {@link Resource} containing the ecore model.
+	 * @param selectedClasses
+	 *            Collection of classes which shall be converted to the qb format.
+	 * @param viewModels
+	 *            Collection of view models for the {@code selectedClasses} which shall not use the default layout.
+	 * @param destinationDir
+	 *            The directory where the converted files shall be saved.
+	 * */
+	def public void exportEcoreModel(EClass eClass, File destinationDir) {
+		val controllerDest = "public/" + eClass.name + ".json"
+		
+		// TODO implement in the end
+
+	// val viewModel = buildEcoreModel(view)
+	// FileUtils.writeStringToFile(new File(destinationDir, controllerDest), viewModel);
+	}
+	
 
 	def dispatch JsonElement createJsonSchemaElement(EClass eClass) {
 		val jsonObject = new JsonObject().withObjectType
@@ -115,95 +138,21 @@ class EcoreJSonExporter {
 		switch (eClassifier) {
 			case eClassifier.equals(EcorePackage.eINSTANCE.EBoolean): "boolean"
 			case eClassifier.equals(EcorePackage.eINSTANCE.EInt): "integer"
+			case eClassifier.equals(EcorePackage.eINSTANCE.EDouble): "number"
+			case eClassifier.equals(EcorePackage.eINSTANCE.EFloat): "number"
 			default: "string"
 		}
 	}
 
 	def dispatch JsonElement createJsonSchemaElement(EReference reference) {
 		new JsonObject()
+		// TODO implement
 	}
 
 	def dispatch JsonElement createJsonSchemaElement(EObject eObject) {
 		throw new UnsupportedOperationException(
 			"Cannot create a Json Schema element for EObjects that are not " +
 				"EClasses, EEnums, EAttributes, or EReferences.")
-	}
-
-	/**
-	 * The main method which handles the conversion and export of the ecore files.
-	 *
-	 * @param ecoreModel
-	 *            The {@link Resource} containing the ecore model.
-	 * @param selectedClasses
-	 *            Collection of classes which shall be converted to the qb format.
-	 * @param viewModels
-	 *            Collection of view models for the {@code selectedClasses} which shall not use the default layout.
-	 * @param destinationDir
-	 *            The directory where the converted files shall be saved.
-	 * */
-	def public void exportEcoreModel(EClass eClass, File destinationDir) {
-		val controllerDest = "public/" + eClass.name + ".json"
-
-	// val viewModel = buildEcoreModel(view)
-	// FileUtils.writeStringToFile(new File(destinationDir, controllerDest), viewModel);
-	}
-
-	def String buildEClass(EClass eClass) '''
-		{
-		  "type": "object",
-		  "properties": {
-		    «FOR eAttribute : eClass.EAllAttributes SEPARATOR ','»
-		    	«buildEAttribute(eAttribute)»
-		    «ENDFOR»
-		  }
-		}
-	'''
-
-	def String buildEAttribute(EAttribute eAttribute) {
-		if (eAttribute.EAttributeType.equals(EcorePackage.eINSTANCE.EDate)) {
-			return buildDateEAttribute(eAttribute.name)
-		} else if (eAttribute.EAttributeType instanceof EEnum) {
-			return buildEnumEAttribute(eAttribute.name, eAttribute.EAttributeType as EEnum)
-		}
-		return buildEAttribute(eAttribute.name, eAttribute.getEAttributeType.asQBType)
-	}
-
-	def buildEnumEAttribute(String name, EEnum eEnum) {
-		buildEnum(name, eEnum.ELiterals.map[literal|literal.name])
-	}
-
-	def String buildEAttribute(String name, String type) '''
-		"«name»": {"type": "«type»"}
-	'''
-
-	def String buildEnum(String name, List<String> enumValues) '''
-		"«name»": {
-		  "type": "string",
-		  «buildEnum(enumValues)»
-		}
-	'''
-
-	def String buildEnum(List<String> enumValues) '''
-		"enum": [
-		  «FOR value : enumValues SEPARATOR ','»
-		  	"«value»"
-		  «ENDFOR»
-		]
-	'''
-
-	def String buildDateEAttribute(String name) '''
-		"«name»": {
-		  "type": "string",
-		  "format": "date-time"
-		}
-	'''
-
-	def asQBType(EDataType dataType) {
-		dataType.name.toLowerCase.substring(1)
-	}
-
-	def asQBType(String name) {
-		name.toLowerCase.substring(1)
 	}
 
 	/* ******************************************************************
