@@ -9,6 +9,7 @@
  * Contributors:
  * Stefan Dirix - initial API and implementation
  * Philip Langer - re-implementation based on Gson 
+ * Florian Zoubek - bug fixing
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.export
 
@@ -58,22 +59,9 @@ class EcoreJSonExporter {
 	private static final val PROPERTIES = "properties"
 	private static final val ADDITIONAL_PROPERTIES = "additionalProperties"
 
-	private val GsonBuilder builder = new GsonBuilder()
-
 	def EcoreJSonExporter() {
-		initializeBuilder()
 	}
 
-	private def initializeBuilder() {
-		builder.registerTypeAdapter(EClass,
-			[ EClass eClass, Type type, JsonSerializationContext context |
-				createJsonSchemaElement(eClass)
-			]);
-		builder.registerTypeAdapter(EStructuralFeature,
-			[ EStructuralFeature feature, Type type, JsonSerializationContext context |
-				createJsonSchemaElement(feature)
-			]);
-	}
 	
 	
 	/**
@@ -174,12 +162,13 @@ class EcoreJSonExporter {
 		if (!requiredPropertiesArray.empty) {
 			jsonObject.with(REQUIRED, requiredPropertiesArray)
 		}
+		jsonObject
 	}
 
 	private def withProperties(JsonObject jsonObject, Collection<? extends EStructuralFeature> features) {
 		val propertyObject = new JsonObject
 		for (feature : features) {
-			val jsonElement = builder.create.toJsonTree(feature, EStructuralFeature)
+			val jsonElement = createJsonSchemaElement(feature)
 			propertyObject.add(feature.name, jsonElement)
 		}
 		jsonObject.with(PROPERTIES, propertyObject)
