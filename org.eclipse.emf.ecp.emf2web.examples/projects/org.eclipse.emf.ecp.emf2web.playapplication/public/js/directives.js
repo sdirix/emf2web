@@ -13,7 +13,7 @@ qbFormsDirectives.directive('control', function() {
             topValidateNumber: '=',
             topValidateInteger: '='
         },
-        templateUrl: 'templates/control.html'
+        templateUrl: '/assets/templates/control.html'
     };
 });
 
@@ -28,7 +28,7 @@ qbFormsDirectives.directive('recelement', function(RecursionHelper) {
             topValidateNumber: '=',            
             topValidateInteger: '='
         },
-        templateUrl: 'templates/element.html',
+        templateUrl: '/assets/templates/element.html',
         compile: function(element){
             return RecursionHelper.compile(element);
         }

@@ -1,9 +1,49 @@
 'use strict';
 
 /* Services */
-var dataServices = angular.module('myApp.dataServices', []);
+var dataServices = angular.module('qbForms.dataServices', []);
 
-var maxSize = 99;
+var maxSize = 100;
+
+//http://stackoverflow.com/questions/14430655/recursion-in-angular-directives
+//TODO: Maybe Use https://github.com/marklagendijk/angular-recursion ? 
+dataServices.factory('RecursionHelper', ['$compile',
+    function($compile) {
+        return {
+            compile: function(element, link){
+                // Normalize the link parameter
+                if(angular.isFunction(link)){
+                    link = { post: link };
+                }
+
+                // Break the recursion loop by removing the contents
+                var contents = element.contents().remove();
+                var compiledContents;
+                return {
+                    pre: (link && link.pre) ? link.pre : null,
+                    /**
+                     * Compiles and re-adds the contents
+                     */
+                    post: function(scope, element){
+                        // Compile the contents
+                        if(!compiledContents){
+                            compiledContents = $compile(contents);
+                        }
+                        // Re-add the compiled contents to the element
+                        compiledContents(scope, function(clone){
+                            element.append(clone);
+                        });
+
+                        // Call the post-linking function, if any
+                        if(link && link.post){
+                            link.post.apply(null, arguments);
+                        }
+                    }
+                };
+            }
+        };
+    }
+]);
 
 dataServices.factory('SendData', ['$http',
     function($http) {
@@ -12,15 +52,19 @@ dataServices.factory('SendData', ['$http',
                 if (id !== "") {
                     data.id = id;
                     $http.post("/" + type + "/" + id, data).success(function() {
-                        alert("Update Data successfull");
-                    }).error(function(){
-                        alert("Update Data failed!");
+                        swal("Update Data successfull", "", "success");
+                        //alert("Update Data successfull");
+                    }).error(function(data, status, headers, config){
+                        swal("Update Data failed", "Error " + status + ": " + data.message, "error");
+                        //alert("Update Data failed!");
                     });
                 } else {
-                    $http.post("/" + type, data).success(function() {
-                        alert("Create Data successfull");
-                    }).error(function(){
-                        alert("Create Data failed!");
+                    $http.post("/" + type, data).success(function(data, status, headers, config) {
+                        swal("Create Data successfull", "Generated ID: " + data.id, "success");
+                        //alert("Create Data successfull");
+                    }).error(function(data, status, headers, config){
+                        swal("Create Data failed", "Error " + status + ": " + data.message, "error");
+                        //alert("Create Data failed!");
                     });
                 }
             }
@@ -189,7 +233,7 @@ function buildLayoutTree(model, layout, instance, bindings) {
 
             result.push(cObject);
 
-            bindings[uiElement.name] = uiElement.value;
+            bindings[uiElement.id] = uiElement.value;
         } else if (element.type === "Label") {
             var lObject = {
                 "type": element.type,
@@ -275,12 +319,13 @@ function getValue(elementName, instanceData) {
     return null;
 }
 
-function getUIElement(displayName, name, type, value) {
+function getUIElement(displayName, path, type, value) {
     var data = {
         "displayname": displayName,
-        "name": name,
+        "id": path,
         "value": value,
         "type": type.type,
+        //
         "options": type.enum,
         "isOpen": false,
         "alerts": []

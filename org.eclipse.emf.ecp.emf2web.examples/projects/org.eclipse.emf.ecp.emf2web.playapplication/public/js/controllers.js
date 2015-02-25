@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-var qbFormsControllers = angular.module('myApp.controllers', []);
+var qbFormsControllers = angular.module('qbForms.controllers', []);
 
 qbFormsControllers
     .controller('FormCtrl', ['$scope', 'GetData', 'SendData', '$routeParams',
@@ -40,7 +40,7 @@ qbFormsControllers
             };
 
             $scope.validateNumber = function(value, element) {
-                if (isNaN(value)) {
+                if (value !== undefined && value !== null && isNaN(value)) {
                     element.alerts = [];
                     var alert = {
                         type: 'danger',
@@ -54,7 +54,7 @@ qbFormsControllers
             };
 
             $scope.validateInteger = function(value, element) {
-                if (isNaN(value) || (value !== "" && !(/^\d+$/.test(value)))) {
+                if (value !== undefined && value !== null && (isNaN(value) || (value !== "" && !(/^\d+$/.test(value))))) {
                     element.alerts = [];
                     var alert = {
                         type: 'danger',

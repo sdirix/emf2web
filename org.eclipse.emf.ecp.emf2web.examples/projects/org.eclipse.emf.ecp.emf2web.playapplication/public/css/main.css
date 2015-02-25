@@ -7,8 +7,8 @@
 .right-buffer {
     margin-right:20px;
 }
-.right-buffer-l {
-    margin-right:40px;
+.move-right {
+    padding-left: 87%;
 }
 .left-buffer {
 	margin-left:20px;
@@ -26,8 +26,25 @@
     -moz-border-radius: 15px;
     border-radius: 15px;
 }
-.inputform {
-    background: LightBlue;
+
+.error {
+    background: Red;
+}
+
+.fill {
+	width: 100%;
+}
+
+.btn {
+     border-radius: 0px;
+ }
+
+.bootstrap-qbwrapper .btn {
+    border-radius: 0px;
+}
+
+.qb-form {
+    background: #fffbff;
     margin-left:20px;
     margin-right:20px;
     margin-top:20px;
@@ -37,18 +54,40 @@
     padding-top:10px;
     padding-bottom:10px;
 }
-.error {
-    background: Red;
-}
-.fill {
-	width: 100%;
-}
 
-.qblabel{
+.qb-label{
   padding-left:0px;
   padding-right:0px;
   font-weight: bold;
   font-size: 1.3em;
+}
+
+.bootstrap-qbwrapper .form-control{
+    border-radius: 0px;
+}
+
+.qb-control {
+
+}
+
+.qb-control-number {
+
+}
+
+.qb-control-integer {
+
+}
+
+.qb-control-string {
+
+}
+
+.qb-control-datetime {
+
+}
+
+.qb-control-enum {
+
 }
 
 .radio-inline, .checkbox{
@@ -66,8 +105,6 @@ fieldset.inline2 {
 .normal-margin-left{
   margin-left: 0px;
 }
-
-
 
 #wrapper {
   padding-left: 250px;
@@ -158,31 +195,41 @@ fieldset.inline2 {
 
 @media (max-width:767px) {
 
-#wrapper {
-  padding-left: 0;
+    #wrapper {
+        padding-left: 0;
+    }
+
+    #sidebar-wrapper {
+        left: 0;
+    }
+
+    #wrapper.active {
+        position: relative;
+        left: 250px;
+    }
+
+    #wrapper.active #sidebar-wrapper {
+        left: 250px;
+        width: 250px;
+        transition: all 0.4s ease 0s;
+    }
+
+    #menu-toggle {
+        display: inline-block;
+    }
+
+    .inset {
+        padding: 15px;
+    }
 }
 
-#sidebar-wrapper {
-  left: 0;
+#localModel {
+    max-width: 100%;
+    min-height: 300px;
+}
+#localView {
+    max-width: 100%;
+    min-height: 300px;
 }
 
-#wrapper.active {
-  position: relative;
-  left: 250px;
-}
 
-#wrapper.active #sidebar-wrapper {
-  left: 250px;
-  width: 250px;
-  transition: all 0.4s ease 0s;
-}
-
-#menu-toggle {
-  display: inline-block;
-}
-
-.inset {
-  padding: 15px;
-}
-
-}

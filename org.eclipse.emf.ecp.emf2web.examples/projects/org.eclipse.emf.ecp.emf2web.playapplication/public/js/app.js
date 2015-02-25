@@ -1,13 +1,12 @@
 'use strict';
 
-angular.module('myApp', [
+angular.module('qbForms', [
     'ngRoute',
     'ui.bootstrap',
     'ui.validate',
-    'myApp.filters',
-    'myApp.dataServices',
-    'myApp.directives',
-    'myApp.controllers'
+    'qbForms.dataServices',
+    'qbForms.directives',
+    'qbForms.controllers'
 ]).
 config(['$routeProvider',
     function($routeProvider) {
