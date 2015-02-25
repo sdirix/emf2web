@@ -85,12 +85,12 @@ class Emf2QbExporter {
 		routesIntro
 		+
 		'''
-		«FOR eClass : selectedClasses»
-		GET     /«eClass.name.toLowerCase»/model		controllers.«eClass.name»Controller.getModel
-		GET     /«eClass.name.toLowerCase»/view			controllers.«eClass.name»Controller.getView
-		->		/«eClass.name.toLowerCase»				controllers.«eClass.name»Router
+		Â«FOR eClass : selectedClassesÂ»
+		GET     /Â«eClass.name.toLowerCaseÂ»/model		controllers.Â«eClass.nameÂ»Controller.getModel
+		GET     /Â«eClass.name.toLowerCaseÂ»/view			controllers.Â«eClass.nameÂ»Controller.getView
+		->		/Â«eClass.name.toLowerCaseÂ»				controllers.Â«eClass.nameÂ»Router
 		
-		«ENDFOR»	
+		Â«ENDFORÂ»	
 		'''
 	}
 	
@@ -112,33 +112,33 @@ class Emf2QbExporter {
 	def private String buildControllerFile(EClass eClass){
 		val name = eClass.name
 		'''
-		«controllerIntro»
+		Â«controllerIntroÂ»
 		'''
 		+
 		'''
-		object «name»Controller extends MongoController with QBCrudController {
+		object Â«nameÂ»Controller extends MongoController with QBCrudController {
 
-		  lazy val collection = new QBMongoCollection("«name.toLowerCase»")(db) with QBCollectionValidation {
-		    override def schema = «name»Schema.modelSchema
+		  lazy val collection = new QBMongoCollection("Â«name.toLowerCaseÂ»")(db) with QBCollectionValidation {
+		    override def schema = Â«nameÂ»Schema.modelSchema
 		  }
 		
-		  override def createSchema = «name»Schema.modelSchema -- "id"
+		  override def createSchema = Â«nameÂ»Schema.modelSchema -- "id"
 		
 		  def getView = JsonHeaders {
 		    Action {
-		      Ok(Json.toJson(«name»Schema.viewSchema))
+		      Ok(Json.toJson(Â«nameÂ»Schema.viewSchema))
 		    }
 		  }
 		  
 		  def getModel = JsonHeaders {
 		    Action {
-		      Ok(Json.toJson(«name»Schema.modelSchema))
+		      Ok(Json.toJson(Â«nameÂ»Schema.modelSchema))
 		    }
 		  }
 		}
 		
-		object «name»Router extends QBRouter {
-		  override def qbRoutes = «name»Controller.crudRoutes
+		object Â«nameÂ»Router extends QBRouter {
+		  override def qbRoutes = Â«nameÂ»Controller.crudRoutes
 		}
 		'''
 	}
@@ -160,13 +160,13 @@ class Emf2QbExporter {
 	
 	def private String buildSchemaFile(EClass eClass, Set<Resource> viewModels){
 		'''
-		«scalaIntro»
+		Â«scalaIntroÂ»
 		'''
 		+
 		'''
-		object «eClass.name»Schema {
-				«buildModelObject(eClass)»
-				«buildViewModelObject(eClass, viewModels)»
+		object Â«eClass.nameÂ»Schema {
+				Â«buildModelObject(eClass)Â»
+				Â«buildViewModelObject(eClass, viewModels)Â»
 		}
 		'''
 	}
@@ -179,7 +179,7 @@ class Emf2QbExporter {
 			'''
 			val viewSchema = QBViewModel(
 				modelSchema,
-				«buildViewModel(eClass, viewModel.contents.get(0))»
+				Â«buildViewModel(eClass, viewModel.contents.get(0))Â»
 			)
 			'''
 		}
@@ -189,41 +189,41 @@ class Emf2QbExporter {
 		switch viewModelElement {
 			VView:
 				'''
-				«FOR element : viewModelElement.children SEPARATOR ','»
-				«buildViewModel(eClass, element)»
-				«ENDFOR»
+				Â«FOR element : viewModelElement.children SEPARATOR ','Â»
+				Â«buildViewModel(eClass, element)Â»
+				Â«ENDFORÂ»
 				'''
 			VHorizontalLayout:
 				'''
 				QBHorizontalLayout(
-					«FOR element : viewModelElement.children SEPARATOR ','»
-					«buildViewModel(eClass, element)»
-					«ENDFOR»
+					Â«FOR element : viewModelElement.children SEPARATOR ','Â»
+					Â«buildViewModel(eClass, element)Â»
+					Â«ENDFORÂ»
 				)
 				'''
 			VVerticalLayout:
 				'''
 				QBVerticalLayout(
-					«FOR element : viewModelElement.children SEPARATOR ','»
-					«buildViewModel(eClass, element)»
-					«ENDFOR»
+					Â«FOR element : viewModelElement.children SEPARATOR ','Â»
+					Â«buildViewModel(eClass, element)Â»
+					Â«ENDFORÂ»
 				)
 				'''
 			VGroup:
 				'''
-				QBGroup("«viewModelElement.name»",
-					«FOR element : viewModelElement.children SEPARATOR ','»
-					«buildViewModel(eClass, element)»
-					«ENDFOR»	
+				QBGroup("Â«viewModelElement.nameÂ»",
+					Â«FOR element : viewModelElement.children SEPARATOR ','Â»
+					Â«buildViewModel(eClass, element)Â»
+					Â«ENDFORÂ»	
 				)
 				'''
 			VLabel:
 				'''
-				QBLabel("«viewModelElement.name»")
+				QBLabel("Â«viewModelElement.nameÂ»")
 				'''	
 			VControl:
 				'''
-				QBViewControl("«nameHelper.getDisplayName(eClass,viewModelElement.domainModelReference.EStructuralFeatureIterator.next)»", QBViewPath("«viewModelElement.domainModelReference.EStructuralFeatureIterator.next.name»"))
+				QBViewControl("Â«nameHelper.getDisplayName(eClass,viewModelElement.domainModelReference.EStructuralFeatureIterator.next)Â»", QBViewPath("Â«viewModelElement.domainModelReference.EStructuralFeatureIterator.next.nameÂ»"))
 				'''
 			default: ""
 		}
@@ -255,13 +255,13 @@ class Emf2QbExporter {
 		'''
 		val modelSchema = qbClass(	
 			"id" -> objectId,
-			«FOR eStructuralFeature : requiredFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> «classMapper.getQBName(eStructuralFeature.EType)»
-			«ENDFOR»
-			«IF requiredFeatures.size > 0 && optionalFeatures.size > 0»,«ENDIF»
-			«FOR eStructuralFeature : optionalFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> optional(«classMapper.getQBName(eStructuralFeature.EType)»)
-			«ENDFOR»
+			Â«FOR eStructuralFeature : requiredFeatures SEPARATOR ','Â»
+				"Â«eStructuralFeature.nameÂ»" -> Â«classMapper.getQBName(eStructuralFeature.EType)Â»
+			Â«ENDFORÂ»
+			Â«IF requiredFeatures.size > 0 && optionalFeatures.size > 0Â»,Â«ENDIFÂ»
+			Â«FOR eStructuralFeature : optionalFeatures SEPARATOR ','Â»
+				"Â«eStructuralFeature.nameÂ»" -> optional(Â«classMapper.getQBName(eStructuralFeature.EType)Â»)
+			Â«ENDFORÂ»
 		)
 		'''
 	}
@@ -270,9 +270,9 @@ class Emf2QbExporter {
 		'''
 		val viewSchema = QBViewModel(	
 			modelSchema,
-			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType)] SEPARATOR ','»
-			QBViewControl("«nameHelper.getDisplayName(eClass,eStructuralFeature)»", QBViewPath("«eStructuralFeature.name»"))
-			«ENDFOR»
+			Â«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType)] SEPARATOR ','Â»
+			QBViewControl("Â«nameHelper.getDisplayName(eClass,eStructuralFeature)Â»", QBViewPath("Â«eStructuralFeature.nameÂ»"))
+			Â«ENDFORÂ»
 		)
 		'''
 	}
