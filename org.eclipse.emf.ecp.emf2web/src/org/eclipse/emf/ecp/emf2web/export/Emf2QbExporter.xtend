@@ -37,7 +37,7 @@ import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
 class Emf2QbExporter {
 
 	var ClassMapping classMapper = null;
-	var NameHelper nameHelper = null;
+	var NameHelperImpl nameHelper = null;
 	
 	/**
 	 * The main method which handles the conversion and export of the ecore files.
@@ -53,7 +53,7 @@ class Emf2QbExporter {
 	 * */
 	def public void export(Resource ecoreModel, Set<EClass> selectedClasses, Set<Resource> viewModels, File destinationDir){
 		classMapper = new ClassMapping()
-		nameHelper = new NameHelper()
+		nameHelper = new NameHelperImpl()
 
 		val allEEnums = new ArrayList<EEnum>();
 		ecoreModel.allContents.filter(EPackage).forEach [ ePackage |
