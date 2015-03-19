@@ -11,71 +11,40 @@
  * Philip Langer - re-implementation based on Gson 
  * Florian Zoubek - bug fixing
  *******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.export
+package org.eclipse.emf.ecp.emf2web.generator
 
-import java.io.File
-import java.util.Set
-import org.eclipse.emf.ecore.EClass
-import org.eclipse.emf.ecore.resource.Resource
-import org.apache.commons.io.FileUtils
-import org.eclipse.emf.ecp.view.spi.model.VView
-import org.eclipse.emf.ecp.view.spi.model.VControl
-import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalLayout
-import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
-import org.eclipse.emf.ecp.view.spi.model.VElement
-import org.eclipse.emf.ecp.view.spi.model.VContainer
-import org.eclipse.emf.ecore.EStructuralFeature
-import java.util.List
-import org.eclipse.emf.ecore.EClassifier
-import org.eclipse.emf.ecore.EDataType
-import org.eclipse.emf.ecore.EAttribute
-import org.eclipse.emf.ecore.EcorePackage
-import org.eclipse.emf.ecore.EEnum
-import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapterFactory
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.google.gson.JsonSerializer
-import java.lang.reflect.Type
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonObject
-import org.eclipse.emf.ecore.EObject
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import java.util.Collection
-import org.eclipse.emf.ecore.EReference
 import com.google.gson.JsonArray
-import java.util.HashSet
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import java.io.File
+import java.util.Collection
+import org.eclipse.emf.ecore.EAttribute
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EClassifier
+import org.eclipse.emf.ecore.EEnum
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.ecore.EStructuralFeature
+
+import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isBooleanType
+import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isDateType
+import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isEnumType
+import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isIntegerType
+import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isNumberType
 
 /** 
  * The class which handles the conversion from ecore files to qbForm files.
  * 
  */
-class EcoreJSonExporter {
+class EcoreJsonGenerator {
 
 	private static final val TYPE = "type"
 	private static final val OBJECT = "object"
 	private static final val REQUIRED = "required"
 	private static final val PROPERTIES = "properties"
-	private static final val ADDITIONAL_PROPERTIES = "additionalProperties"
-
-	def EcoreJSonExporter() {
-	}
-
+	private static final val ADDITIONAL_PROPERTIES = "additionalProperties"	
 	
-	
-	/**
-	 * The main method which handles the conversion and export of the ecore files.
-	 *
-	 * @param ecoreModel
-	 *            The {@link Resource} containing the ecore model.
-	 * @param selectedClasses
-	 *            Collection of classes which shall be converted to the qb format.
-	 * @param viewModels
-	 *            Collection of view models for the {@code selectedClasses} which shall not use the default layout.
-	 * @param destinationDir
-	 *            The directory where the converted files shall be saved.
-	 * */
 	def public void exportEcoreModel(EClass eClass, File destinationDir) {
 		val controllerDest = "public/" + eClass.name + ".json"
 		
@@ -109,9 +78,9 @@ class EcoreJSonExporter {
 
 	private def JsonObject withTypeProperties(JsonObject jsonObject, EClassifier eClassifier) {
 		jsonObject.withType(jsonType(eClassifier))
-		if (eClassifier.equals(EcorePackage.eINSTANCE.EDate)) {
+		if (eClassifier.isDateType) {
 			jsonObject.with("format", "date-time")
-		} else if (eClassifier instanceof EEnum) {
+		} else if (eClassifier.isEnumType) {
 			val eEnum = eClassifier as EEnum
 			val literalArray = new JsonArray
 			for (name : eEnum.ELiterals.map[name]) {
@@ -124,10 +93,9 @@ class EcoreJSonExporter {
 
 	private def jsonType(EClassifier eClassifier) {
 		switch (eClassifier) {
-			case eClassifier.equals(EcorePackage.eINSTANCE.EBoolean): "boolean"
-			case eClassifier.equals(EcorePackage.eINSTANCE.EInt): "integer"
-			case eClassifier.equals(EcorePackage.eINSTANCE.EDouble): "number"
-			case eClassifier.equals(EcorePackage.eINSTANCE.EFloat): "number"
+			case eClassifier.isBooleanType: "boolean"
+			case eClassifier.isIntegerType: "integer"
+			case eClassifier.isNumberType: "number"
 			default: "string"
 		}
 	}

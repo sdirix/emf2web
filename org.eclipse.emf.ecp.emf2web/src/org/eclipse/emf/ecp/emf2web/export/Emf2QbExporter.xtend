@@ -31,6 +31,8 @@ import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
 
 import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.getQBName
 import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.isAllowed
+import org.eclipse.emf.ecp.emf2web.generator.FormsScalaGenerator
+import org.eclipse.emf.ecp.emf2web.generator.EcoreScalaGenerator
 
 /** 
  * The class which handles the conversion from ecore files to qb files.
@@ -215,15 +217,14 @@ class Emf2QbExporter {
 	 * Generates the QB view model object for the {@link EClass} and EMF Forms view models.
 	 */
 	def private String buildViewModelObject(EClass eClass, Set<Resource> viewModels){
+		val generator = new FormsScalaGenerator(new NameHelperImpl)
+		
 		val viewModel = findViewModel(eClass, viewModels)
 		if(viewModel == null){
 			buildDefaultViewModel(eClass)
 		}else{
 			'''
-			val viewSchema = QBViewModel(
-				modelSchema,
-				«buildViewModel(eClass, viewModel.contents.get(0))»
-			)
+			val viewSchema = «generator.generate(viewModel.contents.get(0) as VView, "modelSchema")»
 			'''
 		}
 	}
@@ -307,19 +308,10 @@ class Emf2QbExporter {
 	 * 
 	 */	
 	def private String buildModelObject(EClass eClass){
-		val requiredFeatures = eClass.EAllStructuralFeatures.filter[f | f.EType.isAllowed && f.lowerBound > 0];
-		val optionalFeatures = eClass.EAllStructuralFeatures.filter[f | f.EType.isAllowed && f.lowerBound == 0];
+		val generator = new EcoreScalaGenerator
+		
 		'''
-		val modelSchema = qbClass(	
-			"id" -> objectId,
-			«FOR eStructuralFeature : requiredFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> «eStructuralFeature.EType.getQBName»
-			«ENDFOR»
-			«IF requiredFeatures.size > 0 && optionalFeatures.size > 0»,«ENDIF»
-			«FOR eStructuralFeature : optionalFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> optional(«eStructuralFeature.EType.getQBName»)
-			«ENDFOR»
-		)
+		val modelSchema = «generator.generate(eClass)»
 		'''
 	}
 	

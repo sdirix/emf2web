@@ -1,27 +1,19 @@
-package org.eclipse.emf.ecp.emf2web.export
+package org.eclipse.emf.ecp.emf2web.generator
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.List
-import org.eclipse.emf.ecore.EClass
-import org.eclipse.emf.ecore.EDataType
-import org.eclipse.emf.ecore.EStructuralFeature
-import org.eclipse.emf.ecore.EStructuralFeature.Setting
 import org.eclipse.emf.ecore.EcoreFactory
 import org.eclipse.emf.ecore.EcorePackage
-import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalFactory
-import org.eclipse.emf.ecp.view.spi.model.VViewFactory
-import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalFactory
 import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-import com.google.gson.JsonElement
-import com.google.gson.GsonBuilder
 
-class EcoreJSonExporterTest {
+class EcoreJsonExporterTest {
 	static final val ECORE_PACKAGE = EcorePackage.eINSTANCE
 	static final val ECORE_FACTORY = EcoreFactory.eINSTANCE
 	static final val TEST_ECLASS_NAME = "TestEClass";
@@ -30,16 +22,16 @@ class EcoreJSonExporterTest {
 
 	final val List<String> testEnumValues = new ArrayList<String>(Arrays.asList("1A", "2B"))
 
-	private EcoreJSonExporter exporter;
+	private EcoreJsonGenerator exporter;
 
 	@Before
 	def void init() {
-		exporter = new EcoreJSonExporter()
+		exporter = new EcoreJsonGenerator()
 	}
 
 	def buildEnum() {
 		val eEnum = ECORE_FACTORY.createEEnum
-		eEnum.name = org.eclipse.emf.ecp.emf2web.export.EcoreJSonExporterTest.TEST_ECLASS_NAME
+		eEnum.name = EcoreJsonExporterTest.TEST_ECLASS_NAME
 		for (String literal : testEnumValues) {
 			val enumLiteral = ECORE_FACTORY.createEEnumLiteral
 			enumLiteral.name = literal
@@ -51,7 +43,7 @@ class EcoreJSonExporterTest {
 	@Test
 	def void testBuildClassWithReference() {
 		val eClass = ECORE_FACTORY.createEClass
-		eClass.name = org.eclipse.emf.ecp.emf2web.export.EcoreJSonExporterTest.TEST_ECLASS_NAME
+		eClass.name = EcoreJsonExporterTest.TEST_ECLASS_NAME
 
 		val eReference = createReference()
 		eReference.EType = null // TODO
@@ -63,7 +55,7 @@ class EcoreJSonExporterTest {
 
 	def createReference() {
 		val eReference = ECORE_FACTORY.createEReference
-		eReference.name = org.eclipse.emf.ecp.emf2web.export.EcoreJSonExporterTest.TEST_ECLASS_NAME + "Ref"
+		eReference.name = EcoreJsonExporterTest.TEST_ECLASS_NAME + "Ref"
 		eReference.containment = true
 		eReference
 	}

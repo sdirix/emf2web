@@ -1,4 +1,4 @@
-package org.eclipse.emf.ecp.emf2web.export
+package org.eclipse.emf.ecp.emf2web.generator
 
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EStructuralFeature
@@ -11,16 +11,18 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
+import org.eclipse.emf.ecp.emf2web.generator.FormsJsonGenerator
+import org.eclipse.emf.ecp.emf2web.export.NameHelper
 
-class Emf2QbFormsExporterTest2 {
-	private Emf2QbFormsExporter exporter;
+class FormsJsonExporterTest {
+	private FormsJsonGenerator exporter;
 	val testName = "testName";
 	val testPath = "testPath";
 	val EStructuralFeature mockFeature = EcorePackage.eINSTANCE.EClass_Abstract
 
 	@Before
 	def void init() {
-		exporter = new Emf2QbFormsExporter(
+		exporter = new FormsJsonGenerator(
 			new NameHelper() {
 
 				override getDisplayName(Setting setting) {
@@ -37,7 +39,7 @@ class Emf2QbFormsExporterTest2 {
 	@Test
 	def testBuildEmptyViewModel() {
 		val view = VViewFactory.eINSTANCE.createView;
-		val result = exporter.buildViewModel(view);
+		val result = exporter.generate(view);
 		assertEquals(emptyViewModel(), result);
 	}
 
@@ -55,7 +57,7 @@ class Emf2QbFormsExporterTest2 {
 		view.children.add(vertical)
 		view.children.add(control)
 
-		val result = exporter.buildViewModel(view);
+		val result = exporter.generate(view);
 		assertEquals(viewWithAllContentsModel(), result);
 	}
 	
