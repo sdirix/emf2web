@@ -19,7 +19,6 @@ import java.util.HashSet
 import java.util.Set
 import org.apache.commons.io.FileUtils
 import org.eclipse.emf.ecore.EClass
-import org.eclipse.emf.ecore.EEnum
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.Resource
@@ -30,13 +29,14 @@ import org.eclipse.emf.ecp.view.spi.model.VControl
 import org.eclipse.emf.ecp.view.spi.model.VView
 import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
 
+import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.getQBName
+import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.isAllowed
+
 /** 
  * The class which handles the conversion from ecore files to qb files.
  * 
  * */
 class Emf2QbExporter {
-
-	var ClassMapping classMapper = null;
 	var NameHelperImpl nameHelper = null;
 	
 	/**
@@ -52,15 +52,7 @@ class Emf2QbExporter {
 	 *            The directory where the converted files shall be saved.
 	 * */
 	def public void export(Resource ecoreModel, Set<EClass> selectedClasses, Set<Resource> viewModels, File destinationDir){
-		classMapper = new ClassMapping()
 		nameHelper = new NameHelperImpl()
-
-		val allEEnums = new ArrayList<EEnum>();
-		ecoreModel.allContents.filter(EPackage).forEach [ ePackage |
-			allEEnums.addAll(ePackage.EClassifiers.filter(EEnum))
-		]
-		
-		classMapper.addAllEEnum(allEEnums)
 		
 		
 		val eClasses = new HashSet<EClass>()
@@ -315,17 +307,17 @@ class Emf2QbExporter {
 	 * 
 	 */	
 	def private String buildModelObject(EClass eClass){
-		val requiredFeatures = eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound > 0];
-		val optionalFeatures = eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType) && f.lowerBound == 0];
+		val requiredFeatures = eClass.EAllStructuralFeatures.filter[f | f.EType.isAllowed && f.lowerBound > 0];
+		val optionalFeatures = eClass.EAllStructuralFeatures.filter[f | f.EType.isAllowed && f.lowerBound == 0];
 		'''
 		val modelSchema = qbClass(	
 			"id" -> objectId,
 			«FOR eStructuralFeature : requiredFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> «classMapper.getQBName(eStructuralFeature.EType)»
+				"«eStructuralFeature.name»" -> «eStructuralFeature.EType.getQBName»
 			«ENDFOR»
 			«IF requiredFeatures.size > 0 && optionalFeatures.size > 0»,«ENDIF»
 			«FOR eStructuralFeature : optionalFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> optional(«classMapper.getQBName(eStructuralFeature.EType)»)
+				"«eStructuralFeature.name»" -> optional(«eStructuralFeature.EType.getQBName»)
 			«ENDFOR»
 		)
 		'''
@@ -339,7 +331,7 @@ class Emf2QbExporter {
 		'''
 		val viewSchema = QBViewModel(	
 			modelSchema,
-			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | classMapper.isAllowed(f.EType)] SEPARATOR ','»
+			«FOR eStructuralFeature : eClass.EAllStructuralFeatures.filter[f | f.EType.isAllowed] SEPARATOR ','»
 			QBViewControl("«nameHelper.getDisplayName(eClass,eStructuralFeature)»", QBViewPath("«eStructuralFeature.name»"))
 			«ENDFOR»
 		)
