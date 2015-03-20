@@ -23,6 +23,8 @@ import org.eclipse.emf.ecp.view.spi.model.VContainer
 import org.eclipse.emf.ecp.view.spi.model.VControl
 import org.eclipse.emf.ecp.view.spi.model.VElement
 import org.eclipse.emf.ecp.view.spi.model.VView
+import com.google.gson.JsonParser
+import com.google.gson.GsonBuilder
 
 /** 
  * The class which handles the conversion from ecore files to qbForm files.
@@ -36,11 +38,16 @@ class FormsJsonGenerator {
 
 	NameHelper nameHelper
 	
-	/** 
+	//TODO: Use Gson library to build Json instead of templating it via Xtend. See EcoreJsonGenerator as an example.
 	 * Generates the default QB view model for the given {@link EClass}.
-	 * 
-	 * */
 	def String generate(VView view) {
+		val parser = new JsonParser
+		val json = parser.parse(buildViewModelElement(view)).asJsonObject
+		val gson = new GsonBuilder().setPrettyPrinting().create()
+		gson.toJson(json)
+	}
+	
+	def protected String buildViewModelElement(VView view){
 		'''
 			{
 			  "elements": [
