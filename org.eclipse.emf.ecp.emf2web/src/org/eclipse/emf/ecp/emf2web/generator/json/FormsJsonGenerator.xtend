@@ -10,7 +10,7 @@
  * Stefan Dirix - initial API and implementation
  * 
  *******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.json
 
 import java.io.File
 import java.util.List
@@ -39,7 +39,7 @@ class FormsJsonGenerator {
 	NameHelper nameHelper
 	
 	//TODO: Use Gson library to build Json instead of templating it via Xtend. See EcoreJsonGenerator as an example.
-	 * Generates the default QB view model for the given {@link EClass}.
+
 	def String generate(VView view) {
 		val parser = new JsonParser
 		val json = parser.parse(buildViewModelElement(view)).asJsonObject
@@ -65,8 +65,8 @@ class FormsJsonGenerator {
 	}
 	
 	def protected String buildControl(VControl control){
-		val EStructuralFeature feature = control.domainModelReference.EStructuralFeatureIterator.next
-		val EClass eClass = feature.EContainingClass
+		val EStructuralFeature feature = control.domainModelReference.getEStructuralFeatureIterator.next
+		val EClass eClass = feature.getEContainingClass
 		val String name =nameHelper.getDisplayName(eClass, feature)
 		buildControl(name, feature.name)
 	}

@@ -19,8 +19,8 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecp.emf2web.generator.EcoreJsonGenerator;
-import org.eclipse.emf.ecp.emf2web.generator.FormsJsonGenerator;
+import org.eclipse.emf.ecp.emf2web.generator.json.EcoreJsonGenerator;
+import org.eclipse.emf.ecp.emf2web.generator.json.FormsJsonGenerator;
 import org.eclipse.emf.ecp.view.model.generator.ViewProvider;
 import org.eclipse.emf.ecp.view.spi.model.VView;
 

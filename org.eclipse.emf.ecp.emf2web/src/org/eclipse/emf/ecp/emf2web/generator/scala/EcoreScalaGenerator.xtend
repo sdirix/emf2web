@@ -9,7 +9,7 @@
  * Contributors:
  * Stefan Dirix - initial API and implementation
  ******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.scala
 
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EClassifier
@@ -39,17 +39,17 @@ class EcoreScalaGenerator{
 	 * 		The string representing the QB Scala Object.
 	 */
 	def String generate(EClass eClass) {
-		val requiredFeatures = eClass.EAllStructuralFeatures.filter[f|f.EType.isAllowed && f.lowerBound > 0];
-		val optionalFeatures = eClass.EAllStructuralFeatures.filter[f|f.EType.isAllowed && f.lowerBound == 0];
+		val requiredFeatures = eClass.getEAllStructuralFeatures.filter[f|f.getEType.isAllowed && f.lowerBound > 0];
+		val optionalFeatures = eClass.getEAllStructuralFeatures.filter[f|f.getEType.isAllowed && f.lowerBound == 0];
 		'''
 		qbClass(	
 			"id" -> objectId,
 			«FOR eStructuralFeature : requiredFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> «getName(eStructuralFeature.EType)»
+				"«eStructuralFeature.name»" -> «getName(eStructuralFeature.getEType)»
 			«ENDFOR»
 			«IF requiredFeatures.size > 0 && optionalFeatures.size > 0»,«ENDIF»
 			«FOR eStructuralFeature : optionalFeatures SEPARATOR ','»
-				"«eStructuralFeature.name»" -> optional(«getName(eStructuralFeature.EType)»)
+				"«eStructuralFeature.name»" -> optional(«getName(eStructuralFeature.getEType)»)
 			«ENDFOR»
 		)
 		'''
@@ -70,7 +70,7 @@ class EcoreScalaGenerator{
 	
 	private def String getEnumList(EClassifier eType){
 		'''
-		«FOR name : (eType as EEnum).ELiterals.map[name] SEPARATOR ','»"«name»"«ENDFOR»
+		«FOR name : (eType as EEnum).getELiterals.map[name] SEPARATOR ','»"«name»"«ENDFOR»
 		'''
 	}
 }

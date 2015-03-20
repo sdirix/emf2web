@@ -11,7 +11,7 @@
  * Philip Langer - re-implementation based on Gson 
  * Florian Zoubek - bug fixing
  *******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.json
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -53,13 +53,13 @@ class EcoreJsonGenerator {
 
 	def dispatch JsonElement createJsonSchemaElement(EClass eClass) {
 		val jsonObject = new JsonObject().withObjectType
-		jsonObject.withProperties(eClass.EAllStructuralFeatures)
+		jsonObject.withProperties(eClass.getEAllStructuralFeatures)
 		jsonObject.with(ADDITIONAL_PROPERTIES, false)
-		jsonObject.withRequiredProperties(eClass.EAllStructuralFeatures.filter[required])
+		jsonObject.withRequiredProperties(eClass.getEAllStructuralFeatures.filter[required])
 	}
 
 	def dispatch JsonElement createJsonSchemaElement(EAttribute attribute) {
-		new JsonObject().withTypeProperties(attribute.EType, attribute.upperBound)
+		new JsonObject().withTypeProperties(attribute.getEType, attribute.upperBound)
 	}
 
 	private def JsonObject withTypeProperties(JsonObject jsonObject, EClassifier eClassifier, int upper) {
@@ -79,7 +79,7 @@ class EcoreJsonGenerator {
 		} else if (eClassifier.isEnumType) {
 			val eEnum = eClassifier as EEnum
 			val literalArray = new JsonArray
-			for (name : eEnum.ELiterals.map[name]) {
+			for (name : eEnum.getELiterals.map[name]) {
 				literalArray.add(new JsonPrimitive(name))
 			}
 			jsonObject.with("enum", literalArray)

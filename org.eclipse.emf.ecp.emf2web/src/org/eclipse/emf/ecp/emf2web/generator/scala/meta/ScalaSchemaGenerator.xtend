@@ -9,11 +9,11 @@
  * Contributors:
  * Stefan Dirix - initial API and implementation
  ******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.controller.scala
+package org.eclipse.emf.ecp.emf2web.generator.scala.meta
 
 import org.eclipse.emf.ecp.emf2web.export.NameHelperImpl
-import org.eclipse.emf.ecp.emf2web.generator.EcoreScalaGenerator
-import org.eclipse.emf.ecp.emf2web.generator.FormsScalaGenerator
+import org.eclipse.emf.ecp.emf2web.generator.scala.EcoreScalaGenerator
+import org.eclipse.emf.ecp.emf2web.generator.scala.FormsScalaGenerator
 import org.eclipse.emf.ecp.view.spi.model.VView
 import org.eclipse.xtend.lib.annotations.Accessors
 

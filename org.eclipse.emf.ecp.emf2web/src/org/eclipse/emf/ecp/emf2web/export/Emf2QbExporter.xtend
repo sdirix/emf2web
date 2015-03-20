@@ -22,6 +22,8 @@ import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecp.emf2web.generator.scala.EcoreScalaGenerator
+import org.eclipse.emf.ecp.emf2web.generator.scala.FormsScalaGenerator
 import org.eclipse.emf.ecp.view.spi.group.model.VGroup
 import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalLayout
 import org.eclipse.emf.ecp.view.spi.label.model.VLabel
@@ -29,10 +31,7 @@ import org.eclipse.emf.ecp.view.spi.model.VControl
 import org.eclipse.emf.ecp.view.spi.model.VView
 import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalLayout
 
-import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.getQBName
 import static extension org.eclipse.emf.ecp.emf2web.export.ClassMapping.isAllowed
-import org.eclipse.emf.ecp.emf2web.generator.FormsScalaGenerator
-import org.eclipse.emf.ecp.emf2web.generator.EcoreScalaGenerator
 
 /** 
  * The class which handles the conversion from ecore files to qb files.

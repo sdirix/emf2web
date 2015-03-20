@@ -11,16 +11,16 @@
  ******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.controller.json
 
-import org.eclipse.emf.ecp.emf2web.controller.AbstractGenerationController
 import java.util.Collection
-import org.eclipse.emf.ecp.view.spi.model.VView
-import java.util.Map
 import java.util.HashMap
+import java.util.Map
+import org.eclipse.emf.ecp.emf2web.controller.AbstractGenerationController
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfo
-import org.eclipse.emf.ecp.emf2web.generator.EcoreJsonGenerator
-import org.eclipse.emf.ecp.emf2web.generator.FormsJsonGenerator
-import org.eclipse.emf.ecp.emf2web.export.NameHelperImpl
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfoType
+import org.eclipse.emf.ecp.emf2web.export.NameHelperImpl
+import org.eclipse.emf.ecp.emf2web.generator.json.EcoreJsonGenerator
+import org.eclipse.emf.ecp.emf2web.generator.json.FormsJsonGenerator
+import org.eclipse.emf.ecp.view.spi.model.VView
 
 /**
  * @author Stefan Dirix <sdirix@eclipsesource.com>
@@ -32,7 +32,7 @@ class JsonGenerationController extends AbstractGenerationController {
 		super(views)
 	}
 	
-	override Map<org.eclipse.emf.ecp.emf2web.controller.GenerationInfo, String> generateFiles() {
+	override Map<GenerationInfo, String> generateFiles() {
 		val result = new HashMap<GenerationInfo, String>
 
 		val modelGenerator = new EcoreJsonGenerator

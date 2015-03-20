@@ -1,4 +1,4 @@
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.json
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
+import org.eclipse.emf.ecp.emf2web.generator.json.EcoreJsonGenerator
 
 class EcoreJsonExporterTest {
 	static final val ECORE_PACKAGE = EcorePackage.eINSTANCE
@@ -35,7 +36,7 @@ class EcoreJsonExporterTest {
 		for (String literal : testEnumValues) {
 			val enumLiteral = ECORE_FACTORY.createEEnumLiteral
 			enumLiteral.name = literal
-			eEnum.ELiterals.add(enumLiteral)
+			eEnum.getELiterals.add(enumLiteral)
 		}
 		eEnum
 	}
@@ -47,7 +48,7 @@ class EcoreJsonExporterTest {
 
 		val eReference = createReference()
 		eReference.EType = null // TODO
-		eClass.EStructuralFeatures.add(eReference)
+		eClass.getEStructuralFeatures.add(eReference)
 
 	// TODO
 	//assertEquals(testEnum, result);
@@ -74,7 +75,7 @@ class EcoreJsonExporterTest {
 	def void createJsonSchemaElementFromEClassWithOptionalStringAttribute() {
 		val eClass = emptyEClass()
 		val optionalStringEAttribute = stringEAttribute(0, 1)
-		eClass.EStructuralFeatures.add(optionalStringEAttribute)
+		eClass.getEStructuralFeatures.add(optionalStringEAttribute)
 		val result = exporter.createJsonSchemaElement(eClass)
 		assertEqualsJson(eClassWithOptionalStringEAttributeJsonElement(), result);
 	}
@@ -83,7 +84,7 @@ class EcoreJsonExporterTest {
 	def void createJsonSchemaElementFromEClassWithMandatoryStringAttribute() {
 		val eClass = emptyEClass()
 		val mandatoryStringEAttribute = stringEAttribute(1, 1)
-		eClass.EStructuralFeatures.add(mandatoryStringEAttribute)
+		eClass.getEStructuralFeatures.add(mandatoryStringEAttribute)
 		val result = exporter.createJsonSchemaElement(eClass)
 		assertEqualsJson(eClassWithMandatoryStringEAttributeJsonElement(), result);
 	}
@@ -99,7 +100,7 @@ class EcoreJsonExporterTest {
 		eAttribute.name = TEST_EATTRIBUTE_NAME
 		eAttribute.lowerBound = lower
 		eAttribute.upperBound = upper
-		eAttribute.EType = ECORE_PACKAGE.EString
+		eAttribute.EType = ECORE_PACKAGE.getEString
 		eAttribute
 	}
 

@@ -18,6 +18,9 @@ import java.util.Map
 import org.eclipse.emf.ecp.emf2web.controller.AbstractGenerationController
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfo
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfoType
+import org.eclipse.emf.ecp.emf2web.generator.scala.meta.PlayRoutesGenerator
+import org.eclipse.emf.ecp.emf2web.generator.scala.meta.ScalaControllerGenerator
+import org.eclipse.emf.ecp.emf2web.generator.scala.meta.ScalaSchemaGenerator
 import org.eclipse.emf.ecp.view.spi.model.VView
 
 /**

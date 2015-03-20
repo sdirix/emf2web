@@ -9,7 +9,7 @@
  * Contributors:
  * Stefan Dirix - initial API and implementation
  ******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.scala
 
 import java.util.List
 import org.eclipse.emf.ecore.EClass
@@ -71,8 +71,8 @@ class FormsScalaGenerator{
 	}
 	
 	def protected String buildControl(VControl control){
-		val EStructuralFeature feature = control.domainModelReference.EStructuralFeatureIterator.next
-		val EClass eClass = feature.EContainingClass
+		val EStructuralFeature feature = control.domainModelReference.getEStructuralFeatureIterator.next
+		val EClass eClass = feature.getEContainingClass
 		val String name = nameHelper.getDisplayName(eClass, feature)
 		buildControl(name, feature.name)
 	}

@@ -9,7 +9,7 @@
  * Contributors:
  * Stefan Dirix - initial API and implementation
  ******************************************************************************/
-package org.eclipse.emf.ecp.emf2web.controller.scala
+package org.eclipse.emf.ecp.emf2web.generator.scala.meta
 
 import org.eclipse.xtend.lib.annotations.Accessors
 

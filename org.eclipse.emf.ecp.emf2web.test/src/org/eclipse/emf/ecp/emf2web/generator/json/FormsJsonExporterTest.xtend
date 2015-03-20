@@ -1,4 +1,4 @@
-package org.eclipse.emf.ecp.emf2web.generator
+package org.eclipse.emf.ecp.emf2web.generator.json
 
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EStructuralFeature
@@ -11,14 +11,14 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-import org.eclipse.emf.ecp.emf2web.generator.FormsJsonGenerator
 import org.eclipse.emf.ecp.emf2web.export.NameHelper
+import org.eclipse.emf.ecp.emf2web.generator.json.FormsJsonGenerator
 
 class FormsJsonExporterTest {
 	private FormsJsonGenerator exporter;
 	val testName = "testName";
 	val testPath = "testPath";
-	val EStructuralFeature mockFeature = EcorePackage.eINSTANCE.EClass_Abstract
+	val EStructuralFeature mockFeature = EcorePackage.eINSTANCE.getEClass_Abstract
 
 	@Before
 	def void init() {
