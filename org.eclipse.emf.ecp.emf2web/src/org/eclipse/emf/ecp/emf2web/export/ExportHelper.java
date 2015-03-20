@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecp.emf2web.generator.EcoreJsonGenerator;
 import org.eclipse.emf.ecp.emf2web.generator.FormsJsonGenerator;
 import org.eclipse.emf.ecp.view.model.generator.ViewProvider;
@@ -43,13 +42,13 @@ public class ExportHelper {
 		final FormsJsonGenerator viewJSonExporter = new FormsJsonGenerator(
 				new NameHelperImpl());
 		for (final EClass eClass : keySet) {
-			ecoreJSonExporter.exportEcoreModel(eClass, destinationDir);
-			final EObject eObject = EcoreUtil.create(eClass);
-			// Export eObject
-			VView vView = eClassViewModelMap.get(eClass);
-			if (vView == null) {
-				vView = generateVView(eObject);
-			}
+			// ecoreJSonExporter.exportEcoreModel(eClass, destinationDir);
+			// final EObject eObject = EcoreUtil.create(eClass);
+			// // Export eObject
+			// VView vView = eClassViewModelMap.get(eClass);
+			// if (vView == null) {
+			// vView = generateVView(eObject);
+			// }
 			// viewJSonExporter.exportViewModel(vView, destinationDir);
 
 		}

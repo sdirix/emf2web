@@ -13,11 +13,11 @@
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.generator
 
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import java.io.File
 import java.util.Collection
 import org.eclipse.emf.ecore.EAttribute
 import org.eclipse.emf.ecore.EClass
@@ -44,16 +44,12 @@ class EcoreJsonGenerator {
 	private static final val REQUIRED = "required"
 	private static final val PROPERTIES = "properties"
 	private static final val ADDITIONAL_PROPERTIES = "additionalProperties"	
-	
-	def public void exportEcoreModel(EClass eClass, File destinationDir) {
-		val controllerDest = "public/" + eClass.name + ".json"
-		
-		// TODO implement in the end
 
-	// val viewModel = buildEcoreModel(view)
-	// FileUtils.writeStringToFile(new File(destinationDir, controllerDest), viewModel);
+	def String generate(EClass eClass){
+		val json = createJsonSchemaElement(eClass)
+		val gson = new GsonBuilder().setPrettyPrinting().create()
+		gson.toJson(json)
 	}
-	
 
 	def dispatch JsonElement createJsonSchemaElement(EClass eClass) {
 		val jsonObject = new JsonObject().withObjectType
