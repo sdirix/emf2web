@@ -4,6 +4,7 @@ import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.emf.ecore.EStructuralFeature.Setting
 import org.eclipse.emf.ecore.EcorePackage
+import org.eclipse.emf.ecp.emf2web.export.NameHelper
 import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalFactory
 import org.eclipse.emf.ecp.view.spi.model.VViewFactory
 import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalFactory
@@ -11,8 +12,8 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-import org.eclipse.emf.ecp.emf2web.export.NameHelper
-import org.eclipse.emf.ecp.emf2web.generator.json.FormsJsonGenerator
+
+import static extension org.eclipse.emf.ecp.emf2web.util.JsonPrettyPrint.jsonPrettyPrint
 
 class FormsJsonExporterTest {
 	private FormsJsonGenerator exporter;
@@ -66,12 +67,12 @@ class FormsJsonExporterTest {
 {
   "elements": [
     {
-      "type": "QBHorizontalLayout",
+      "type": "HorizontalLayout",
       "elements": [
       ]
     },
     {
-      "type": "QBVerticalLayout",
+      "type": "VerticalLayout",
       "elements": [
       ]
     },
@@ -81,8 +82,9 @@ class FormsJsonExporterTest {
       "name": "testName"
     }
 	]
-)
+}
 		'''
+		.jsonPrettyPrint
 	}
 
 	@Test
@@ -165,27 +167,28 @@ class FormsJsonExporterTest {
 	def String test2HorizontalInVertical() {
 		'''
 			{
-			  "type": "QBVerticalLayout",
+			  "type": "VerticalLayout",
 			  "elements": [
 			    {
-			      "type": "QBHorizontalLayout",
+			      "type": "HorizontalLayout",
 			      "elements": [
 			      ]
 			    },
 			    {
-			      "type": "QBHorizontalLayout",
+			      "type": "HorizontalLayout",
 			      "elements": [
 			      ]
 			    }
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String test2ControlsInVertical() {
 		'''
 			{
-			  "type": "QBVerticalLayout",
+			  "type": "VerticalLayout",
 			  "elements": [
 			    {
 			      "type": "Control",
@@ -200,12 +203,13 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String testControlInVertical() {
 		'''
 			{
-			  "type": "QBVerticalLayout",
+			  "type": "VerticalLayout",
 			  "elements": [
 			    {
 			      "type": "Control",
@@ -215,63 +219,68 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	@Test
-	def testgetQBType() {
+	def testgetType() {
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout;
-		val result = exporter.getQBType(vertical)
-		assertEquals("QBVerticalLayout", result)
+		val result = exporter.getType(vertical)
+		assertEquals("VerticalLayout", result)
 	}
 
 	def String testVerticalInHorizontal() {
 		'''
 			{
-			  "type": "QBHorizontalLayout",
+			  "type": "HorizontalLayout",
 			  "elements": [
 			    {
-			      "type": "QBVerticalLayout",
+			      "type": "VerticalLayout",
 			      "elements": [
 			      ]
 			    }
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String testHorizontalInVertical() {
 		'''
 			{
-			  "type": "QBVerticalLayout",
+			  "type": "VerticalLayout",
 			  "elements": [
 			    {
-			      "type": "QBHorizontalLayout",
+			      "type": "HorizontalLayout",
 			      "elements": [
 			      ]
 			    }
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String testHorizontal() {
 		'''
 			{
-			  "type": "QBHorizontalLayout",
+			  "type": "HorizontalLayout",
 			  "elements": [
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String testVertical() {
 		'''
 			{
-			  "type": "QBVerticalLayout",
+			  "type": "VerticalLayout",
 			  "elements": [
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String emptyViewModel() {
@@ -279,8 +288,9 @@ class FormsJsonExporterTest {
 			{
 			  "elements": [
 				]
-			)
+			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def String testControl() {
@@ -291,6 +301,7 @@ class FormsJsonExporterTest {
 			  "name": "«testName»"
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 }

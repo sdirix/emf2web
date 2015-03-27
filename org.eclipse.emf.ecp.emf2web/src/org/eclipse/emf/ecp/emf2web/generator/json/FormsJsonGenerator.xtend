@@ -12,9 +12,7 @@
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.generator.json
 
-import java.io.File
 import java.util.List
-import org.apache.commons.io.FileUtils
 import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EStructuralFeature
 import org.eclipse.emf.ecp.emf2web.export.NameHelper
@@ -22,9 +20,10 @@ import org.eclipse.emf.ecp.view.spi.model.VContainedElement
 import org.eclipse.emf.ecp.view.spi.model.VContainer
 import org.eclipse.emf.ecp.view.spi.model.VControl
 import org.eclipse.emf.ecp.view.spi.model.VElement
+
+import static extension org.eclipse.emf.ecp.emf2web.util.JsonPrettyPrint.jsonPrettyPrint
+import static extension org.eclipse.emf.ecp.emf2web.util.JsonPrettyPrint.jsonPrettyPrintArray
 import org.eclipse.emf.ecp.view.spi.model.VView
-import com.google.gson.JsonParser
-import com.google.gson.GsonBuilder
 
 /** 
  * The class which handles the conversion from ecore files to qbForm files.
@@ -40,21 +39,16 @@ class FormsJsonGenerator {
 	
 	//TODO: Use Gson library to build Json instead of templating it via Xtend. See EcoreJsonGenerator as an example.
 
-	def String generate(VView view) {
-		val parser = new JsonParser
-		val json = parser.parse(buildViewModelElement(view)).asJsonObject
-		val gson = new GsonBuilder().setPrettyPrinting().create()
-		gson.toJson(json)
-	}
 	
-	def protected String buildViewModelElement(VView view){
+	def String generate(VView view){
 		'''
 			{
 			  "elements": [
 			    «buildChildren(view.children)»
 				]
-			)
+			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def protected String buildViewModelElement(VElement vElement) {
@@ -79,21 +73,23 @@ class FormsJsonGenerator {
 			  "name": "«name»"
 			}
 		'''
+		.jsonPrettyPrint
 	}
 
 	def protected String buildContainer(VContainer container) {
 		'''
 			{
-			  "type": "«getQBType(container)»",
+			  "type": "«getType(container)»",
 			  "elements": [
 			    «buildChildren(container.children)»
 			  ]
 			}
 		'''
+		.jsonPrettyPrint
 	}
 	
-	def String getQBType(VElement vElement) {
-		"QB"+vElement.eClass.name
+	def String getType(VElement vElement) {
+		vElement.eClass.name
 	}
 
 	def String buildChildren(List<VContainedElement> children) {
