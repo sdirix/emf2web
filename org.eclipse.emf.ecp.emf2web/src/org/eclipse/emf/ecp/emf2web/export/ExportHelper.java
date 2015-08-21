@@ -31,16 +31,16 @@ public class ExportHelper {
 	}
 
 	public static void updateStandAloneProject(File destinationDir,
-			Set<EClass> eClasses, Set<VView> views) {
+		Set<EClass> eClasses, Set<VView> views) {
 		final Map<EClass, VView> eClassViewModelMap = buildEClassViewModelMap(views);
 		final Iterable<EClass> keySet = eClassViewModelMap.keySet();
 
 		destinationDir = new File(destinationDir,
-				"/idontknowthecorrectdirectory");
+			"/idontknowthecorrectdirectory");
 
 		final EcoreJsonGenerator ecoreJSonExporter = new EcoreJsonGenerator();
 		final FormsJsonGenerator viewJSonExporter = new FormsJsonGenerator(
-				new NameHelperImpl());
+			new NameHelperImpl());
 		for (final EClass eClass : keySet) {
 			// ecoreJSonExporter.exportEcoreModel(eClass, destinationDir);
 			// final EObject eObject = EcoreUtil.create(eClass);
@@ -58,7 +58,7 @@ public class ExportHelper {
 	private static VView generateVView(EObject eObject) {
 		final ViewProvider viewProvider = new ViewProvider();
 		final VView vView = viewProvider.generate(eObject,
-				new HashMap<String, Object>());
+			new HashMap<String, Object>());
 		return vView;
 	}
 
@@ -67,7 +67,7 @@ public class ExportHelper {
 		for (final VView vView : views) {
 			if (vView.getRootEClass() == null) {
 				throw new IllegalArgumentException(
-						"Invalid View Model: Root EClass is null");
+					"Invalid View Model: Root EClass is null");
 			}
 			ret.put(vView.getRootEClass(), vView);
 		}

@@ -177,7 +177,7 @@ public class ModelPathsPage extends WizardPage {
 	 * Specifies the path of the project template.
 	 *
 	 * @return
-	 *         the absolute path of the project template.
+	 * 		the absolute path of the project template.
 	 */
 	public String getTemplatePath() {
 		return templatePath;

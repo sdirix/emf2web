@@ -80,7 +80,7 @@ public class EClassPage extends WizardPage {
 		eClassTableViewer = CheckboxTableViewer.newCheckList(container,
 			SWT.BORDER | SWT.FULL_SELECTION);
 		eClassTableViewer
-		.addCheckStateListener(new EClassTableViewerICheckStateListener());
+			.addCheckStateListener(new EClassTableViewerICheckStateListener());
 		eClassTableViewer.setContentProvider(new ArrayContentProvider());
 
 		final ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
@@ -141,7 +141,7 @@ public class EClassPage extends WizardPage {
 	 *
 	 */
 	private class EClassTableViewerICheckStateListener implements
-	ICheckStateListener {
+		ICheckStateListener {
 		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (event.getChecked()) {
@@ -163,7 +163,7 @@ public class EClassPage extends WizardPage {
 	 * Returns the EClasses selected by the user.
 	 *
 	 * @return
-	 *         EClasses selected by the user.
+	 * 		EClasses selected by the user.
 	 */
 	public Set<EClass> getSelectedEClasses() {
 		return selectedEClasses;

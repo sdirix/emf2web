@@ -57,6 +57,7 @@ public class Messages extends NLS {
 	public static String ViewModelsPage_Title;
 	public static String ViewModelsPage_ViewModelDialog_Description;
 	public static String ViewModelsPage_ViewModelDialog_Title;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

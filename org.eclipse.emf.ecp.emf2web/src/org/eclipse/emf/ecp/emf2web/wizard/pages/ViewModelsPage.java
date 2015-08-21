@@ -95,7 +95,7 @@ public class ViewModelsPage extends WizardPage {
 	 * Returns the selected view models.
 	 *
 	 * @return
-	 *         A collection of the selected view models.
+	 * 		A collection of the selected view models.
 	 */
 	public Set<IFile> getSelectedViewModels() {
 		return selectedViewModels;

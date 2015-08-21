@@ -122,7 +122,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 	 * Returns the .genmodel file if the user entered one.
 	 *
 	 * @return
-	 *         the {@link IFile} containing the .genmodel or {@code null} if the user did not select one.
+	 * 		the {@link IFile} containing the .genmodel or {@code null} if the user did not select one.
 	 */
 	public IFile getGenModel() {
 		return genModel;
@@ -216,18 +216,18 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 		}
 
 		EcoreUtil.resolveAll(resourceSet);
-		
-		ProjectType projectType = ExportHelper.checkProjectType();
-		//TODO: Check for validity (e.g. .project file and target directories)
-		
+
+		final ProjectType projectType = ExportHelper.checkProjectType();
+		// TODO: Check for validity (e.g. .project file and target directories)
+
 		switch (projectType) {
 		case PLAY:
-			updatePlayApplication(ecoreResource, eClasses, viewModels, exportDirectory);			
+			updatePlayApplication(ecoreResource, eClasses, viewModels, exportDirectory);
 			break;
-			
+
 		case STANDALONE:
-			Set<VView> views = new HashSet<>();
-			for (Resource resource : viewModels) {
+			final Set<VView> views = new HashSet<>();
+			for (final Resource resource : viewModels) {
 				views.add((VView) resource.getContents().get(0));
 			}
 			ExportHelper.updateStandAloneProject(exportDirectory, eClasses, views);
@@ -246,17 +246,13 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 
 		return true;
 	}
-	
+
 	private void updatePlayApplication(Resource ecoreResource2,
-			Set<EClass> eClasses, Set<Resource> viewModels, File exportDirectory) {
+		Set<EClass> eClasses, Set<Resource> viewModels, File exportDirectory) {
 		final Emf2QbExporter exporter = new Emf2QbExporter();
 		exporter.export(ecoreResource, eClasses, viewModels, exportDirectory);
-		
+
 	}
-
-	
-
-	
 
 	/**
 	 * Extracts the given zip file to the given destination.
@@ -295,7 +291,7 @@ public class ViewModelExportWizard extends Wizard implements IWorkbenchWizard, I
 	 * @param projectName
 	 *            The name for the new project.
 	 * @return
-	 *         The imported project.
+	 * 		The imported project.
 	 * @throws CoreException
 	 */
 	private IProject importProject(final File projectDirectory, final String projectName) throws CoreException {

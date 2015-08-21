@@ -54,7 +54,7 @@ public class NameHelperImpl implements NameHelper {
 	 * @param setting
 	 *            The {@link Setting} for which the {@link ItemPropertyDescriptor} is to be determined.
 	 * @return
-	 *         The {@link ItemPropertyDescriptor} of the given {@link Setting}.
+	 * 		The {@link ItemPropertyDescriptor} of the given {@link Setting}.
 	 */
 	private IItemPropertyDescriptor getItemPropertyDescriptor(
 		Setting setting) {
@@ -64,8 +64,10 @@ public class NameHelperImpl implements NameHelper {
 		return descriptor;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.emf.ecp.emf2web.export.NameHelper#getDisplayName(org.eclipse.emf.ecore.EStructuralFeature.Setting)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * org.eclipse.emf.ecp.emf2web.export.NameHelper#getDisplayName(org.eclipse.emf.ecore.EStructuralFeature.Setting)
 	 */
 	@Override
 	public String getDisplayName(Setting setting) {
@@ -73,8 +75,10 @@ public class NameHelperImpl implements NameHelper {
 		return descriptor.getDisplayName(setting.getEObject());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.emf.ecp.emf2web.export.NameHelper#getDisplayName(org.eclipse.emf.ecore.EClass, org.eclipse.emf.ecore.EStructuralFeature)
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.emf.ecp.emf2web.export.NameHelper#getDisplayName(org.eclipse.emf.ecore.EClass,
+	 * org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	@Override
 	public String getDisplayName(EClass eClass, EStructuralFeature feat) {

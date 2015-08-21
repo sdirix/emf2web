@@ -35,22 +35,22 @@ public class ClassMapping {
 	 * Ecore identifiers constituting a floating point number.
 	 */
 	public static final String[] NUMBER_IDENTIFIER = new String[] { "EDouble", //$NON-NLS-1$
-			"EDoubleObject", "EFloat", "EFloatObject" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		"EDoubleObject", "EFloat", "EFloatObject" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	/**
 	 * Ecore identifiers constituting an integer.
 	 */
 	public static final String[] INTEGER_IDENTIFIER = new String[] {
-			"EBigDecimal", "EBigInteger", "EByte", "EByteObject", "EChar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-			"ECharacterObject", "EInt", "EIntegerObject", "ELong", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"ELongObject", "EShort", "EShortObject" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		"EBigDecimal", "EBigInteger", "EByte", "EByteObject", "EChar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		"ECharacterObject", "EInt", "EIntegerObject", "ELong", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"ELongObject", "EShort", "EShortObject" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	/**
 	 * Ecore identifiers constituting a boolean.
 	 */
 	public static final String[] BOOLEAN_IDENTIFIER = new String[] {
-			"EBoolean", //$NON-NLS-1$
-			"EBooleanObject" }; //$NON-NLS-1$
+		"EBoolean", //$NON-NLS-1$
+		"EBooleanObject" }; //$NON-NLS-1$
 
 	/**
 	 * Ecore identifiers constituting a date.
@@ -61,10 +61,10 @@ public class ClassMapping {
 	 * Ecore identifiers which are not yet supported by qb.
 	 */
 	public static final String[] UNSUPPORTED_IDENTIFIER = new String[] {
-			"EByteArray", "EDiagnosticChain", "EElist<E>", "EEnumerator", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"EFeatureMap", "EFeatureMapEntry", "EInvocationTargetException", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			"EJavaClass<T>", "EJavaObject", "EMap<K,V>", "EResource", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"EResourceSet", "ETreeIterator<E>" }; //$NON-NLS-1$ //$NON-NLS-2$
+		"EByteArray", "EDiagnosticChain", "EElist<E>", "EEnumerator", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"EFeatureMap", "EFeatureMapEntry", "EInvocationTargetException", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		"EJavaClass<T>", "EJavaObject", "EMap<K,V>", "EResource", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		"EResourceSet", "ETreeIterator<E>" }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * Indicator for an unsupported mapping.
@@ -114,11 +114,11 @@ public class ClassMapping {
 		} else if (Arrays.asList(DATE_IDENTIFIER).contains(eAttributeName)) {
 			return "qbDateTime"; //$NON-NLS-1$
 		} else if (Arrays.asList(UNSUPPORTED_IDENTIFIER).contains(
-				eAttributeName)) {
+			eAttributeName)) {
 			return UNSUPPORTED;
 		} else if (eType.getInstanceTypeName() != null
-				&& eType.getInstanceTypeName().equals(
-						"javax.xml.datatype.XMLGregorianCalendar")) { //$NON-NLS-1$
+			&& eType.getInstanceTypeName().equals(
+				"javax.xml.datatype.XMLGregorianCalendar")) { //$NON-NLS-1$
 			return "qbDateTime"; //$NON-NLS-1$
 		} else if (eType instanceof EEnum) {
 			return "qbEnum(" + enumToQB((EEnum) eType) + ")";
@@ -129,7 +129,7 @@ public class ClassMapping {
 	private static String enumToQB(EEnum eEnum) {
 		String result = ""; //$NON-NLS-1$
 		final List<EEnumLiteral> literals = new ArrayList<EEnumLiteral>(
-				eEnum.getELiterals());
+			eEnum.getELiterals());
 		if (literals.size() > 0) {
 			result += "\"" + literals.get(0).getLiteral() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 			literals.remove(0);
