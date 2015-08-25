@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.eclipse.emf.ecp.emf2web.ui.json.internal.handler.ExportJSONFormsHandler"
+            id="org.eclipse.emf.ecp.emf2web.ui.json.exportJSONSchemaCommand"
+            name="Export to JSONForms">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+         <menu
+               id="org.eclipse.emf.ecp.ui.e3.emfFormsMenu"
+               label="EMF Forms">
+            <command
+                  commandId="org.eclipse.emf.ecp.emf2web.ui.json.exportJSONSchemaCommand"
+                  icon="icons/full/obj16/view.png"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+</plugin>

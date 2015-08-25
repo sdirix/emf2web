@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Json
+Bundle-SymbolicName: org.eclipse.emf.ecp.emf2web.json
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.emf.ecp.emf2web,
+ org.eclipse.emf.ecp.view.model,
+ com.google.gson;bundle-version="2.2.4"
+Export-Package: org.eclipse.emf.ecp.emf2web.json.controller,
+ org.eclipse.emf.ecp.emf2web.json.generator,
+ org.eclipse.emf.ecp.emf2web.json.util
+

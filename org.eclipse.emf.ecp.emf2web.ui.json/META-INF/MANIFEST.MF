@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Json
+Bundle-SymbolicName: org.eclipse.emf.ecp.emf2web.ui.json;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.emf.ecp.emf2web.ui;bundle-version="1.0.0",
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime;bundle-version="3.11.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecp.view.model,
+ org.eclipse.emf.ecp.emf2web,
+ org.eclipse.emf.ecp.emf2web.json;bundle-version="1.0.0"

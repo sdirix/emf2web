@@ -11,24 +11,14 @@
  ******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.controller
 
-import org.eclipse.emf.ecore.EClass
+import java.util.List
+import java.util.Collection
 import org.eclipse.emf.ecp.view.spi.model.VView
-import org.eclipse.xtend.lib.annotations.Accessors
 
 /**
- * @author Stefan Dirix <sdirix@eclipsesource.com>
- * 
+ * @author Stefan Dirix
+ *
  */
-@Accessors
-class GenerationInfo {
-	@Accessors(PUBLIC_GETTER)val String type
-	@Accessors(PUBLIC_GETTER)val EClass eClass
-	@Accessors(PUBLIC_GETTER)val VView view
-	@Accessors(PUBLIC_GETTER)val String nameProposal
-	@Accessors var String generatedString
-	@Accessors var String location
-	
-	val public static final String MODEL_TYPE = "Model"
-	val public static final String VIEW_TYPE = "View";
-	val public static final String MODEL_AND_VIEW_TYPE = "Model and View"
+interface GenerationController {
+	def List<GenerationInfo> generate(Collection<? extends VView> views)
 }

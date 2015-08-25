@@ -1,7 +1,5 @@
 package org.eclipse.emf.ecp.emf2web.generator.json
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import java.util.ArrayList
 import java.util.Arrays
@@ -12,14 +10,13 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-import org.eclipse.emf.ecp.emf2web.generator.json.EcoreJsonGenerator
+import org.eclipse.emf.ecp.emf2web.json.generator.EcoreJsonGenerator
 
 class EcoreJsonExporterTest {
 	static final val ECORE_PACKAGE = EcorePackage.eINSTANCE
 	static final val ECORE_FACTORY = EcoreFactory.eINSTANCE
 	static final val TEST_ECLASS_NAME = "TestEClass";
 	static final val TEST_EATTRIBUTE_NAME = "testAttribute";
-	static final val TEST_TYPE = "testType";
 
 	final val List<String> testEnumValues = new ArrayList<String>(Arrays.asList("1A", "2B"))
 
@@ -67,8 +64,8 @@ class EcoreJsonExporterTest {
 	@Test
 	def void createJsonSchemaElementFromEmptyEClass() {
 		val eClass = emptyEClass()
-		val result = exporter.createJsonSchemaElement(eClass)
-		assertEqualsJson(emptyEClassJsonElement(), result);
+		val result = exporter.createJsonElement(eClass)
+		assertEquals(emptyEClassJsonElement(), result);
 	}
 
 	@Test
@@ -76,8 +73,8 @@ class EcoreJsonExporterTest {
 		val eClass = emptyEClass()
 		val optionalStringEAttribute = stringEAttribute(0, 1)
 		eClass.getEStructuralFeatures.add(optionalStringEAttribute)
-		val result = exporter.createJsonSchemaElement(eClass)
-		assertEqualsJson(eClassWithOptionalStringEAttributeJsonElement(), result);
+		val result = exporter.createJsonElement(eClass)
+		assertEquals(eClassWithOptionalStringEAttributeJsonElement(), result);
 	}
 	
 	@Test
@@ -85,8 +82,8 @@ class EcoreJsonExporterTest {
 		val eClass = emptyEClass()
 		val mandatoryStringEAttribute = stringEAttribute(1, 1)
 		eClass.getEStructuralFeatures.add(mandatoryStringEAttribute)
-		val result = exporter.createJsonSchemaElement(eClass)
-		assertEqualsJson(eClassWithMandatoryStringEAttributeJsonElement(), result);
+		val result = exporter.createJsonElement(eClass)
+		assertEquals(eClassWithMandatoryStringEAttributeJsonElement(), result);
 	}
 
 	private def emptyEClass() {
@@ -144,14 +141,5 @@ class EcoreJsonExporterTest {
 
 	private def toJsonElement(CharSequence chars) {
 		new JsonParser().parse(chars.toString)
-	}
-	
-	private def assertEqualsJson(JsonElement expected, JsonElement actual) {
-		if (!expected.equals(actual)) {
-			val gson = new GsonBuilder().setPrettyPrinting().create()
-			assertEquals(gson.toJson(expected), gson.toJson(actual))
-		} else {
-			assertEquals(expected, actual)
-		}
 	}
 }

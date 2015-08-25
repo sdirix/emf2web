@@ -1,52 +1,51 @@
 package org.eclipse.emf.ecp.emf2web.generator.json
 
-import org.eclipse.emf.ecore.EClass
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import org.eclipse.emf.ecore.EStructuralFeature
-import org.eclipse.emf.ecore.EStructuralFeature.Setting
 import org.eclipse.emf.ecore.EcorePackage
-import org.eclipse.emf.ecp.emf2web.export.NameHelper
 import org.eclipse.emf.ecp.view.spi.horizontal.model.VHorizontalFactory
+import org.eclipse.emf.ecp.view.spi.model.VDomainModelReference
 import org.eclipse.emf.ecp.view.spi.model.VViewFactory
 import org.eclipse.emf.ecp.view.spi.vertical.model.VVerticalFactory
 import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.*
-
-import static extension org.eclipse.emf.ecp.emf2web.util.JsonPrettyPrint.jsonPrettyPrint
+import org.eclipse.emf.ecp.emf2web.json.generator.FormsJsonGenerator
+import org.eclipse.emf.ecp.emf2web.util.ReferenceHelper
 
 class FormsJsonExporterTest {
 	private FormsJsonGenerator exporter;
 	val testName = "testName";
-	val testPath = "testPath";
+	val testReference = "testReference";
 	val EStructuralFeature mockFeature = EcorePackage.eINSTANCE.getEClass_Abstract
 
 	@Before
 	def void init() {
 		exporter = new FormsJsonGenerator(
-			new NameHelper() {
-
-				override getDisplayName(Setting setting) {
-					throw new UnsupportedOperationException("TODO: auto-generated method stub")
+			new ReferenceHelper(){
+				override getLabel(VDomainModelReference reference) {
+					testName
 				}
-
-				override getDisplayName(EClass eClass, EStructuralFeature feat) {
-					return testName
+				override getStringRepresentation(VDomainModelReference reference) {
+					testReference
 				}
-
-			});
+				
+			}
+		)
 	}
 
 	@Test
 	def testBuildEmptyViewModel() {
-		val view = VViewFactory.eINSTANCE.createView;
-		val result = exporter.generate(view);
-		assertEquals(emptyViewModel(), result);
+		val view = VViewFactory.eINSTANCE.createView
+		val result = exporter.createJsonElement(view)
+		assertEquals(emptyViewModel(), result)
 	}
 
 	@Test
 	def testBuildViewWithAllContentsModel() {
-		val view = VViewFactory.eINSTANCE.createView;
+		val view = VViewFactory.eINSTANCE.createView
 		val horizontal = VHorizontalFactory.eINSTANCE.createHorizontalLayout
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout
 		val control = VViewFactory.eINSTANCE.createControl
@@ -58,53 +57,56 @@ class FormsJsonExporterTest {
 		view.children.add(vertical)
 		view.children.add(control)
 
-		val result = exporter.generate(view);
-		assertEquals(viewWithAllContentsModel(), result);
+		val result = exporter.createJsonElement(view)
+		assertEquals(viewWithAllContentsModel(), result)
 	}
 	
-	def String viewWithAllContentsModel() {
+	def JsonElement viewWithAllContentsModel() {
 		'''
-{
-  "elements": [
-    {
-      "type": "HorizontalLayout",
-      "elements": [
-      ]
-    },
-    {
-      "type": "VerticalLayout",
-      "elements": [
-      ]
-    },
-    {
-      "type": "Control",
-      "path": "abstract",
-      "name": "testName"
-    }
-	]
-}
+		{
+		  "type": "VerticalLayout",
+		  "elements": [
+		    {
+		      "type": "HorizontalLayout",
+		      "elements": [
+		      ]
+		    },
+		    {
+		      "type": "VerticalLayout",
+		      "elements": [
+		      ]
+		    },
+		    {
+		      "type": "Control",
+		      "scope": {
+			  	"$ref": "«testReference»"
+			  },
+		      "label": "«testName»"
+		    }
+			]
+		}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
 	@Test
 	def testBuildControl() {
-		val result = exporter.buildControl(testName, testPath)
-		assertEquals(testControl, result);
+		val result = exporter.createJsonElement(VViewFactory.eINSTANCE.createControl)
+		assertEquals(testControl, result)
 	}
 
 	@Test
 	def testBuildHorizontalLayoutl() {
 		val horizontal = VHorizontalFactory.eINSTANCE.createHorizontalLayout
-		val result = exporter.buildContainer(horizontal)
-		assertEquals(testHorizontal, result);
+		val result = exporter.createJsonElement(horizontal)
+		assertEquals(testHorizontal, result)
 	}
 
 	@Test
 	def testBuildVerticalLayout() {
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout
-		val result = exporter.buildContainer(vertical)
-		assertEquals(testVertical, result);
+		val result = exporter.createJsonElement(vertical)
+		assertEquals(testVertical, result)
 	}
 
 	@Test
@@ -112,8 +114,8 @@ class FormsJsonExporterTest {
 		val horizontal = VHorizontalFactory.eINSTANCE.createHorizontalLayout
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout
 		horizontal.children.add(vertical)
-		val result = exporter.buildContainer(horizontal)
-		assertEquals(testVerticalInHorizontal, result);
+		val result = exporter.createJsonElement(horizontal)
+		assertEquals(testVerticalInHorizontal, result)
 	}
 
 	@Test
@@ -121,8 +123,8 @@ class FormsJsonExporterTest {
 		val horizontal = VHorizontalFactory.eINSTANCE.createHorizontalLayout
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout
 		vertical.children.add(horizontal)
-		val result = exporter.buildContainer(vertical)
-		assertEquals(testHorizontalInVertical, result);
+		val result = exporter.createJsonElement(vertical)
+		assertEquals(testHorizontalInVertical, result)
 	}
 
 	@Test
@@ -133,8 +135,8 @@ class FormsJsonExporterTest {
 		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout
 		vertical.children.add(horizontal)
 		vertical.children.add(horizontal2)
-		val result = exporter.buildContainer(vertical)
-		assertEquals(test2HorizontalInVertical, result);
+		val result = exporter.createJsonElement(vertical)
+		assertEquals(test2HorizontalInVertical, result)
 	}
 
 	@Test
@@ -145,8 +147,8 @@ class FormsJsonExporterTest {
 		//Use Ecore Ecore as a mock
 		control.setDomainModelReference(mockFeature)
 		vertical.children.add(control);
-		val result = exporter.buildContainer(vertical)
-		assertEquals(testControlInVertical, result);
+		val result = exporter.createJsonElement(vertical)
+		assertEquals(testControlInVertical, result)
 	}
 
 	@Test
@@ -160,11 +162,11 @@ class FormsJsonExporterTest {
 		control2.setDomainModelReference(mockFeature)
 		vertical.children.add(control);
 		vertical.children.add(control2);
-		val result = exporter.buildContainer(vertical)
-		assertEquals(test2ControlsInVertical, result);
+		val result = exporter.createJsonElement(vertical)
+		assertEquals(test2ControlsInVertical, result)
 	}
 
-	def String test2HorizontalInVertical() {
+	def JsonElement test2HorizontalInVertical() {
 		'''
 			{
 			  "type": "VerticalLayout",
@@ -182,54 +184,53 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String test2ControlsInVertical() {
+	def JsonElement test2ControlsInVertical() {
 		'''
 			{
 			  "type": "VerticalLayout",
 			  "elements": [
 			    {
 			      "type": "Control",
-			      "path": "«mockFeature.name»",
-			      "name": "«testName»"
+			      "label": "«testName»",
+			      "scope": {
+			      	"$ref": "«testReference»"
+			      }
 			    },
 			    {
 			      "type": "Control",
-			      "path": "«mockFeature.name»",
-			      "name": "«testName»"
+			      "label": "«testName»",
+			      "scope": {
+			      	"$ref": "«testReference»"
+			      }
 			    }
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String testControlInVertical() {
+	def JsonElement testControlInVertical() {
 		'''
 			{
 			  "type": "VerticalLayout",
 			  "elements": [
 			    {
 			      "type": "Control",
-			      "path": "«mockFeature.name»",
-			      "name": "«testName»"
+			      "label": "«testName»",
+			      "scope": {
+			      	"$ref": "«testReference»"
+			      }
 			    }
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	@Test
-	def testgetType() {
-		val vertical = VVerticalFactory.eINSTANCE.createVerticalLayout;
-		val result = exporter.getType(vertical)
-		assertEquals("VerticalLayout", result)
-	}
-
-	def String testVerticalInHorizontal() {
+	def JsonElement testVerticalInHorizontal() {
 		'''
 			{
 			  "type": "HorizontalLayout",
@@ -242,10 +243,10 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String testHorizontalInVertical() {
+	def JsonElement testHorizontalInVertical() {
 		'''
 			{
 			  "type": "VerticalLayout",
@@ -258,10 +259,10 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String testHorizontal() {
+	def JsonElement testHorizontal() {
 		'''
 			{
 			  "type": "HorizontalLayout",
@@ -269,10 +270,10 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String testVertical() {
+	def JsonElement testVertical() {
 		'''
 			{
 			  "type": "VerticalLayout",
@@ -280,28 +281,31 @@ class FormsJsonExporterTest {
 			  ]
 			}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String emptyViewModel() {
+	def JsonElement emptyViewModel() {
 		'''
-			{
-			  "elements": [
-				]
-			}
+			{}
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
 	}
 
-	def String testControl() {
+	def JsonElement testControl() {
 		'''
-			{
-			  "type": "Control",
-			  "path": "«testPath»",
-			  "name": "«testName»"
-			}
+		    {
+		      "type": "Control",
+		      "label": "«testName»",
+		      "scope": {
+		      	"$ref": "«testReference»"
+		      }
+		    }
 		'''
-		.jsonPrettyPrint
+		.toJsonElement
+	}
+	
+	private def toJsonElement(CharSequence chars) {
+		new JsonParser().parse(chars.toString)
 	}
 
 }

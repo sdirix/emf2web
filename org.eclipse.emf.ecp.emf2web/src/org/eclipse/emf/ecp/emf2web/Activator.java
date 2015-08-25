@@ -12,9 +12,11 @@
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web;
 
+import org.eclipse.emfforms.spi.core.services.databinding.EMFFormsDatabinding;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -85,5 +87,20 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public BundleContext getBundleContext() {
 		return bundleContext;
+	}
+
+	/**
+	 * Returns the {@link EMFFormsDatabinding} service.
+	 * 
+	 * @return
+	 * 		The registered {@link EMFFormsDatabinding} if it exists, {@code null} otherwise.
+	 */
+	public EMFFormsDatabinding getEMFFormsDatabindingService() {
+		final ServiceReference<EMFFormsDatabinding> serviceReference = bundleContext
+			.getServiceReference(EMFFormsDatabinding.class);
+		if (serviceReference != null) {
+			return bundleContext.getService(serviceReference);
+		}
+		return null;
 	}
 }
