@@ -20,6 +20,8 @@ import org.eclipse.emf.ecp.emf2web.json.generator.EcoreJsonGenerator
 import org.eclipse.emf.ecp.emf2web.json.generator.FormsJsonGenerator
 import org.eclipse.emf.ecp.emf2web.json.util.ReferenceHelperImpl
 import org.eclipse.emf.ecp.view.spi.model.VView
+import org.eclipse.emf.ecp.emf2web.exporter.SchemaWrapper
+import org.eclipse.emf.ecp.emf2web.json.generator.seed.SeedWrapper
 
 /**
  * @author Stefan Dirix <sdirix@eclipsesource.com>
@@ -39,13 +41,13 @@ class JsonGenerationController extends AbstractGenerationController {
 
 			val schemaFile = modelGenerator.generate(eClass)
 			val schemaInfo = new GenerationInfo(GenerationInfo.MODEL_TYPE, eClass, null,
-				schemaIdentifier + "Model.json")
+				schemaIdentifier + "Model", new SeedWrapper())
 			schemaInfo.generatedString = schemaFile
 			result.add(schemaInfo)
 
 			val controllerFile = formsGenerator.generate(view)
 			val controllerInfo = new GenerationInfo(GenerationInfo.VIEW_TYPE, null, view,
-				schemaIdentifier + "View.json")
+				schemaIdentifier + "View", new SeedWrapper())
 			controllerInfo.generatedString = controllerFile
 			result.add(controllerInfo)
 		}

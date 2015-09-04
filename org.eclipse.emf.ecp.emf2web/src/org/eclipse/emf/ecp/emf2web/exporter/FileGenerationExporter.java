@@ -11,11 +11,21 @@
  ******************************************************************************/
 package org.eclipse.emf.ecp.emf2web.exporter;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfo;
 
 /**
@@ -32,12 +42,41 @@ public class FileGenerationExporter implements GenerationExporter {
 	}
 
 	protected void export(GenerationInfo generationInfo) throws IOException {
-		final String generatedString = generationInfo.getGeneratedString();
-		final String location = generationInfo.getLocation();
-		export(generatedString, location);
+		final String exportString = wrapGeneration(generationInfo);
+		final URI location = generationInfo.getLocation();
+		export(exportString, location);
 	}
 
-	protected void export(String generatedString, String location) throws IOException {
-		FileUtils.writeStringToFile(new File(location), generatedString);
+	protected String wrapGeneration(GenerationInfo generationInfo) {
+		if (generationInfo.getWrapper() == null) {
+			return generationInfo.getGeneratedString();
+		}
+		return generationInfo.getWrapper().wrap(generationInfo.getGeneratedString(), generationInfo.getType());
+	}
+
+	protected void export(String exportString, URI location) throws IOException {
+		if (location.isPlatform()) {
+			final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			final IFile file = root.getFile(new Path(location.toPlatformString(true)));
+			try {
+				file.setContents(new ByteArrayInputStream(exportString.getBytes()), 0, null);
+			} catch (final CoreException ex) {
+				throw new IOException(ex);
+			}
+		} else if (location.isFile()) {
+			final File file = new File(location.toFileString());
+			writeToFileSystemFile(exportString, file);
+		} else {
+			throw new IOException("Could not handle URI: " + location.toString());
+		}
+	}
+
+	private void writeToFileSystemFile(String exportString, File file) throws IOException {
+		final Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8")); //$NON-NLS-1$
+		try {
+			writer.write(exportString);
+		} finally {
+			writer.close();
+		}
 	}
 }

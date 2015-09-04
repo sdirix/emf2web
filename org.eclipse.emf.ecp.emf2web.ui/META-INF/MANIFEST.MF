@@ -16,6 +16,7 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.equinox.common,
  com.ibm.icu,
  org.eclipse.ui,
- org.eclipse.emf.ecp.view.model
+ org.eclipse.emf.ecp.view.model,
+ org.eclipse.emf.common.ui
 Export-Package: org.eclipse.emf.ecp.emf2web.ui.handler,
  org.eclipse.emf.ecp.emf2web.ui.wizard

@@ -12,6 +12,8 @@ import org.eclipse.emf.ecp.emf2web.exporter.GenerationExporter;
 import org.eclipse.emf.ecp.emf2web.ui.wizard.ExportSchemasWizard;
 import org.eclipse.emf.ecp.view.spi.model.VView;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public abstract class AbstractSchemaExportCommandHandler extends AbstractHandler {
@@ -21,7 +23,9 @@ public abstract class AbstractSchemaExportCommandHandler extends AbstractHandler
 		final List<GenerationInfo> generationInfos = getGenerationController().generate(views);
 		
 		final ExportSchemasWizard wizard = new ExportSchemasWizard(generationInfos, getGenerationExporter());
-		final WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
+		Shell shell = HandlerUtil.getActiveShell(event);
+		final WizardDialog dialog = new WizardDialog(shell, wizard);
+		dialog.setPageSize(new Point(600, 600));
 		dialog.open();
 		return null;
 	}
