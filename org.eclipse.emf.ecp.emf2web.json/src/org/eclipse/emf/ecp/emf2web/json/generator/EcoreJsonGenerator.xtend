@@ -31,6 +31,7 @@ import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isDateType
 import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isEnumType
 import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isIntegerType
 import static extension org.eclipse.emf.ecp.emf2web.util.TypeMapper.isNumberType
+import java.util.HashSet
 
 /** 
  * The class which handles the conversion from ecore files to qbForm files.
@@ -43,12 +44,18 @@ class EcoreJsonGenerator extends JsonGenerator {
 	private static final val REQUIRED = "required"
 	private static final val PROPERTIES = "properties"
 	private static final val ADDITIONAL_PROPERTIES = "additionalProperties"	
+	
+	private final val visitedClasses = new HashSet<EClass>();
 
 	override createJsonElement(EObject object) {
-		createJsonSchemaElement(object)
+		synchronized(visitedClasses){
+			visitedClasses.clear()
+			createJsonSchemaElement(object)
+		}
 	}
 
 	private def dispatch JsonElement createJsonSchemaElement(EClass eClass) {
+		visitedClasses.add(eClass)
 		val jsonObject = new JsonObject().withObjectType
 		jsonObject.withProperties(eClass.getEAllStructuralFeatures)
 		jsonObject.with(ADDITIONAL_PROPERTIES, false)
@@ -94,8 +101,9 @@ class EcoreJsonGenerator extends JsonGenerator {
 	}
 
 	private def dispatch JsonElement createJsonSchemaElement(EReference reference) {
-		new JsonObject()
-		// TODO implement
+		val jsonObject = new JsonObject
+		jsonObject.withType("array")
+		jsonObject.with("items", createJsonSchemaElement(reference.EReferenceType))
 	}
 
 	private def dispatch JsonElement createJsonSchemaElement(EObject eObject) {
@@ -127,10 +135,19 @@ class EcoreJsonGenerator extends JsonGenerator {
 	private def withProperties(JsonObject jsonObject, Collection<? extends EStructuralFeature> features) {
 		val propertyObject = new JsonObject
 		for (feature : features) {
-			val jsonElement = createJsonSchemaElement(feature)
-			propertyObject.add(feature.name, jsonElement)
+			if (feature.isNotCircle) {
+				val jsonElement = createJsonSchemaElement(feature)
+				propertyObject.add(feature.name, jsonElement)
+			}
 		}
 		jsonObject.with(PROPERTIES, propertyObject)
+	}
+	
+	private def boolean isNotCircle(EStructuralFeature feature){
+		if(feature instanceof EReference){
+			return !visitedClasses.contains(feature.EType)
+		}
+		true
 	}
 	
 	
