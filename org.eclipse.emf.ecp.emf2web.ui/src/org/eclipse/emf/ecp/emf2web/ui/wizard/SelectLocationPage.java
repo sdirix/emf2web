@@ -87,8 +87,7 @@ public class SelectLocationPage extends WizardPage {
 
 			btnWrap = new Button(grpWrapper, SWT.CHECK);
 			btnWrap.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-			final String buttonText = "Wrap in " + generationInfo.getWrapper().getName() + ' ' + '(' + '.'
-					+ generationInfo.getWrapper().getFileExtension() + ')';
+			final String buttonText = "Wrap in " + generationInfo.getWrapper().getName();
 			btnWrap.setText(buttonText);
 		}
 
