@@ -24,6 +24,7 @@ import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emfforms.spi.core.services.databinding.DatabindingFailedException;
+import org.eclipse.emfforms.spi.core.services.databinding.DatabindingFailedReport;
 import org.eclipse.emfforms.spi.core.services.databinding.EMFFormsDatabinding;
 
 /**
@@ -46,7 +47,7 @@ public abstract class AbstractReferenceHelper implements ReferenceHelper {
 		adapterFactoryItemDelegator = new AdapterFactoryItemDelegator(
 			composedAdapterFactory);
 
-		dataBinding = Activator.getDefault().getEMFFormsDatabindingService();
+		dataBinding = Activator.getDefault().getEMFFormsDatabinding();
 	}
 
 	protected EStructuralFeature getEStructuralFeature(VDomainModelReference reference) {
@@ -62,9 +63,11 @@ public abstract class AbstractReferenceHelper implements ReferenceHelper {
 		return null;
 	}
 
+	/**
+	 * Handle Databinding Exceptions by reporting them to the ECP ReportService.
+	 */
 	protected void handleDatabindingFailedException(DatabindingFailedException exception) {
-		// Do nothing in default
-		exception.printStackTrace();
+		Activator.getDefault().getReportService().report(new DatabindingFailedReport(exception));
 	}
 
 	/**

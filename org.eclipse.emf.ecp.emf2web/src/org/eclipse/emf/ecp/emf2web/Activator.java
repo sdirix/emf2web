@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.emf.ecp.emf2web;
 
+import org.eclipse.emfforms.spi.common.report.ReportService;
 import org.eclipse.emfforms.spi.core.services.databinding.EMFFormsDatabinding;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -24,13 +25,17 @@ import org.osgi.framework.ServiceReference;
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "com.eclipsesource.emf2qb"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.emf.ecp.emf2web"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
 
 	// The bundle context
 	private BundleContext bundleContext;
+
+	private ServiceReference<ReportService> reportServiceReference;
+
+	private ServiceReference<EMFFormsDatabinding> databindingServiceReference;
 
 	/**
 	 * The constructor
@@ -91,16 +96,27 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * Returns the {@link EMFFormsDatabinding} service.
-	 * 
-	 * @return
-	 * 		The registered {@link EMFFormsDatabinding} if it exists, {@code null} otherwise.
+	 *
+	 * @return The {@link EMFFormsDatabinding}
 	 */
-	public EMFFormsDatabinding getEMFFormsDatabindingService() {
-		final ServiceReference<EMFFormsDatabinding> serviceReference = bundleContext
-			.getServiceReference(EMFFormsDatabinding.class);
-		if (serviceReference != null) {
-			return bundleContext.getService(serviceReference);
+	public EMFFormsDatabinding getEMFFormsDatabinding() {
+		if (databindingServiceReference == null) {
+			databindingServiceReference = plugin.getBundle().getBundleContext()
+				.getServiceReference(EMFFormsDatabinding.class);
 		}
-		return null;
+		return plugin.getBundle().getBundleContext().getService(databindingServiceReference);
+	}
+
+	/**
+	 * Returns the {@link ReportService}.
+	 *
+	 * @return the {@link ReportService}
+	 */
+	public ReportService getReportService() {
+		if (reportServiceReference == null) {
+			reportServiceReference = plugin.getBundle().getBundleContext()
+				.getServiceReference(ReportService.class);
+		}
+		return plugin.getBundle().getBundleContext().getService(reportServiceReference);
 	}
 }
