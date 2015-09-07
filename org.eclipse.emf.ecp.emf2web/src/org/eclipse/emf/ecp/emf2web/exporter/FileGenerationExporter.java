@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecp.emf2web.controller.GenerationInfo;
+import org.eclipse.emf.ecp.emf2web.internal.messages.Messages;
 
 /**
  * @author Stefan Dirix
@@ -67,7 +69,7 @@ public class FileGenerationExporter implements GenerationExporter {
 			final File file = new File(location.toFileString());
 			writeToFileSystemFile(exportString, file);
 		} else {
-			throw new IOException("Could not handle URI: " + location.toString());
+			throw new IOException(MessageFormat.format(Messages.FileGenerationExporter_URI_Error, location.toString()));
 		}
 	}
 
