@@ -20,7 +20,6 @@ import org.eclipse.emf.ecp.emf2web.json.generator.EcoreJsonGenerator
 import org.eclipse.emf.ecp.emf2web.json.generator.FormsJsonGenerator
 import org.eclipse.emf.ecp.emf2web.json.util.ReferenceHelperImpl
 import org.eclipse.emf.ecp.view.spi.model.VView
-import org.eclipse.emf.ecp.emf2web.exporter.SchemaWrapper
 import org.eclipse.emf.ecp.emf2web.json.generator.seed.SeedWrapper
 
 /**
